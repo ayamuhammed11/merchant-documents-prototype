@@ -371,13 +371,14 @@
   .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
     border-bottom: 1px solid var(--border-subtle); }
   .event-item:last-child { border-bottom: none; }
-  .ev-icon { width: 40px; height: 40px; border-radius: 50%; background: #E3E5E5; color: var(--cadet-base);
+  .ev-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--muted); color: var(--cadet-base);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .ev-icon svg { width: 17px; height: 17px; }
-  /* Icon is tinted by action — green: created · blue: captured · yellow: updated · red: deleted */
-  .ev-icon.created { background: var(--success-bg); color: #388E3B; }
+  /* Icon is tinted by action, one Kashier semantic color per action — never a
+     one-off hex: success (green) · info (ocean) · warning (amber) · destructive (red). */
+  .ev-icon.created { background: var(--success-bg); color: var(--success-text); }
   .ev-icon.captured { background: var(--ocean-10); color: var(--primary); }
-  .ev-icon.updated { background: #FFF7E8; color: #92620A; }
+  .ev-icon.updated { background: var(--warning-bg); color: var(--warning-text); }
   .ev-icon.deleted { background: var(--destructive-bg); color: var(--destructive); }
   .ev-body { min-width: 0; padding-top: 1px; flex: 1; }
   .ev-ts { font-size: 13px; color: var(--cadet-04); }
@@ -392,9 +393,8 @@
   .ev-changes .arrow { color: var(--cadet-05); margin: 0 4px; }
   .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
   .events-empty.show { display: block; }
-  .ev-icon.uploaded   { background: var(--ocean-10); color: var(--primary); }
-  .ev-icon.downloaded { background: var(--pill-bg); color: var(--cadet-base); }
-  .ev-icon.previewed  { background: var(--pill-bg); color: var(--cadet-base); }
+  .ev-icon.uploaded   { background: var(--success-bg); color: var(--success-text); } /* a file was successfully filed */
+  .ev-icon.downloaded { background: var(--accent-10); color: var(--accent); }           /* Kashier teal — retrieving a copy */
   /* Which document an event belongs to — only shown on the tab-level feed,
      where events from every document are mixed together. */
   .ev-scope { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
@@ -1482,7 +1482,6 @@
   const EV_ICON = {
     uploaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 7.5 12 3m0 0L7.5 7.5M12 3v13.5"/></svg>',
     downloaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>',
-    previewed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
     captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
     updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>'
   };
@@ -1991,9 +1990,9 @@
       const dt = DOC_TYPES.find(d => d.id === row);
       const action = menuAction.getAttribute('data-menu-action');
       closeRowMenus();
-      if (dt) {
-        addEvent(action === 'preview' ? 'previewed' : 'downloaded', dt.id,
-          (action === 'preview' ? 'previewed <b>' : 'downloaded <b>') + esc(dt.name) + '</b>', []);
+      /* Only Download is logged — opening a preview doesn't change or move anything. */
+      if (dt && action === 'download') {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(dt.name) + '</b>', []);
         renderEvents();
       }
       toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + '.');
@@ -2035,9 +2034,9 @@
       const action = verAction.getAttribute('data-version-action');
       const version = verAction.getAttribute('data-version');
       const dt = DOC_TYPES.find(d => d.id === verAction.getAttribute('data-doctype'));
-      if (dt) {
-        addEvent(action === 'preview' ? 'previewed' : 'downloaded', dt.id,
-          (action === 'preview' ? 'previewed <b>' : 'downloaded <b>') + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+      /* Only Download is logged — opening a preview doesn't change or move anything. */
+      if (dt && action === 'download') {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
         renderEvents();
       }
       toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + ' ' + version + '.');
