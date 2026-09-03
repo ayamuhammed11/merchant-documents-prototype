@@ -267,6 +267,34 @@
   .up-dropzone .dz-sub { font-size: 11.5px; color: var(--cadet-05); }
   .up-dropzone.disabled { opacity: .5; cursor: not-allowed; }
 
+  /* The type's file rule, stated before anything is attached */
+  .up-rule { border: 1px solid var(--border-subtle); border-radius: 8px; background: #FCFCFD;
+    padding: 12px 14px; margin-bottom: 22px; }
+  .up-rule-top { display: flex; align-items: center; gap: 8px; }
+  .up-rule-top svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
+  .up-rule-mode { font-size: 12.5px; font-weight: 700; color: var(--foreground); }
+  .up-rule-meta { font-size: 11.5px; color: var(--cadet-05); margin-top: 5px; line-height: 1.45; }
+  .up-rule-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .up-rule-labels .lchip { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    background: var(--pill-bg); color: var(--pill-text); border-radius: 4px; padding: 3px 7px; }
+
+  /* One named slot per label, in "Multiple — fixed labels" mode */
+  .up-slot { margin-bottom: 14px; }
+  .up-slot:last-child { margin-bottom: 0; }
+  .up-slot-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .up-slot-name { font-size: 12.5px; font-weight: 600; color: var(--foreground); }
+  .up-slot-name .req { color: var(--destructive); }
+  .up-slot-state { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .up-slot-state.filled { color: var(--success-text); }
+  .up-slot-state.empty { color: var(--cadet-05); }
+  .up-dropzone.slim { padding: 14px 16px; }
+  .up-dropzone.slim svg { width: 20px; height: 20px; }
+
+  /* What was refused, and why */
+  .up-error { display: flex; gap: 8px; border: 1px solid #FFBBC4; background: #FFEAED; color: var(--destructive);
+    border-radius: 5px; padding: 10px 12px; margin-top: 12px; font-size: 12px; line-height: 1.45; }
+  .up-error svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+
   .up-files { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
   .up-file { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-subtle);
     border-radius: 8px; padding: 10px 12px; background: #fff; }
@@ -350,6 +378,38 @@
   .ev-changes .arrow { color: var(--cadet-05); margin: 0 4px; }
   .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
   .events-empty.show { display: block; }
+  .ev-icon.uploaded   { background: var(--ocean-10); color: var(--primary); }
+  .ev-icon.downloaded { background: var(--pill-bg); color: var(--cadet-base); }
+  .ev-icon.previewed  { background: var(--pill-bg); color: var(--cadet-base); }
+  /* Which document an event belongs to — only shown on the tab-level feed,
+     where events from every document are mixed together. */
+  .ev-scope { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; margin-left: 8px;
+    background: var(--pill-bg); color: var(--pill-text); vertical-align: middle; }
+  .ev-scope.general { background: var(--ocean-10); color: var(--primary); }
+
+  /* Events card — the whole tab's activity, not one document's */
+  .events-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-top: 20px; }
+  .events-card-head { padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .events-card-head h2 { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
+  .events-card-sub { font-size: 12.5px; color: var(--cadet-05); margin-top: 4px; }
+  .events-list { padding: 4px 22px; }
+
+  /* Pagination — mirrors the On-Hold tables so both modules page the same way */
+  .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+    flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--border-subtle); }
+  .pagination-info { font-size: 13px; color: var(--foreground); }
+  .pagination-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .rpp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--foreground); }
+  .rpp select { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--foreground);
+    cursor: pointer; font-family: inherit; }
+  .pagination { display: flex; align-items: center; gap: 4px; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1.5px solid transparent; background: #fff; font-size: 12px; font-weight: 600;
+    color: var(--foreground); cursor: pointer; }
+  .page-btn.active { background: var(--ocean-10); color: var(--primary); border-color: var(--primary); }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .page-btn:hover:not(.active):not(:disabled) { border-color: var(--border); }
 
   /* ---------- Toast ---------- */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
@@ -371,6 +431,7 @@
     .user .name { display: none; }
     .head-actions { width: 100%; }
     .head-actions .btn { flex: 1; }
+    .pagination-bar { justify-content: center; }
   }
 </style>
 </head>
@@ -517,6 +578,49 @@
           </table>
           <div class="docs-empty" id="allDocsEmpty" style="display:none;">No documents have been uploaded for this merchant.</div>
         </div>
+        <div class="pagination-bar" id="docsPaginationBar">
+          <div class="pagination-info" id="docsPageInfo">0 - 0 of 0</div>
+          <div class="pagination-right">
+            <div class="pagination" id="docsPagination"></div>
+            <div class="rpp">
+              Rows per page:
+              <select id="docsRpp">
+                <option>5</option>
+                <option selected>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═════ Events — every action taken on this tab or inside a document ═════ -->
+      <div class="events-card">
+        <div class="events-card-head">
+          <h2>Events</h2>
+          <p class="events-card-sub">Everything done on this tab and inside the documents on it — uploads,
+            downloads, previews, and the info fields captured or changed on each document.</p>
+        </div>
+        <div class="events-list">
+          <div id="eventsFeed"></div>
+          <div class="events-empty" id="eventsEmpty">No activity recorded on this tab yet.</div>
+        </div>
+        <div class="pagination-bar" id="eventsPaginationBar">
+          <div class="pagination-info" id="eventsPageInfo">0 - 0 of 0</div>
+          <div class="pagination-right">
+            <div class="pagination" id="eventsPagination"></div>
+            <div class="rpp">
+              Per page:
+              <select id="eventsRpp">
+                <option selected>5</option>
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -545,16 +649,11 @@
           <div class="up-hint" id="uploadTypeHint">Only the types defined in Document Types can be uploaded.</div>
         </div>
 
-        <div class="up-field">
-          <label>File <span class="req">*</span></label>
-          <label class="up-dropzone" id="uploadDropzone">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
-            <span class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</span>
-            <span class="dz-sub">PDF, JPG or PNG · up to 10 MB · one or more files</span>
-            <input type="file" id="uploadInput" accept=".pdf,.jpg,.jpeg,.png" multiple hidden>
-          </label>
-          <div class="up-files" id="uploadFileList"></div>
-        </div>
+        <!-- The chosen type's file rule, stated before anything is attached -->
+        <div id="uploadRule"></div>
+
+        <!-- Built from the chosen type's file rule: one dropzone, one per label, or many -->
+        <div class="up-field" id="uploadFileField"></div>
       </div>
       <div class="drawer-foot">
         <span class="foot-note" id="uploadFootNote"></span>
@@ -632,6 +731,7 @@
   const PASSPORT_TYPE = {
     id: 'passport', name: 'Passport', nameAr: 'جواز السفر',
     sub: 'Applies to non-Egyptian owners and signatories. Alternative to National ID, not additional.',
+    files: { mode: 'single', labels: [] }, formats: ['PDF','JPG','PNG'], maxSize: 5,
     icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.949 8.949 0 0 0 12 21Zm3-11.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>',
     fields: [
       { key:'passport_number', label:'Passport Number', type:'text', required:true, pattern:'^[A-Za-z0-9]{6,12}$',
@@ -651,6 +751,7 @@
   };
   const VAT_TYPE = {
     id: 'vat', name: 'VAT Registration Certificate', nameAr: 'شهادة التسجيل بضريبة القيمة المضافة',
+    files: { mode: 'single', labels: [] }, formats: ['PDF'], maxSize: 5,
     sub: 'Captured when the merchant is VAT-registered.',
     icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
     fields: [
@@ -698,6 +799,7 @@
      fields with — see buildDocTypesFromRegistry below. */
   const DEFAULT_REGISTRY = [
     { id: 1, name: 'National ID', nameAr: 'بطاقة الرقم القومي', kind: 'national-id',
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'labeled', labels: [{ name: 'Front side' }, { name: 'Back side' }] },
       desc: 'Front and back of a valid national identity card.',
       infoFields: [
         { label: 'National ID Number', type: 'text', required: true, options: [], pattern: '^[0-9]{14}$' },
@@ -709,6 +811,7 @@
         { label: 'ID Expiry Date', type: 'date', required: true, options: [], isExpiry: true, pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
       ] },
     { id: 2, name: 'Commercial Registration', nameAr: 'السجل التجاري', kind: 'certificate',
+      formats: ['PDF'], maxSize: 10, files: { mode: 'single', labels: [] },
       desc: 'Official commercial registration certificate.',
       infoFields: [
         { label: 'CR Number', type: 'text', required: true, options: [], pattern: '^[0-9]{4,10}$' },
@@ -719,6 +822,7 @@
         { label: 'Authorised Manager Name', type: 'text', required: true, options: [], pattern: '' }
       ] },
     { id: 3, name: 'Tax Card', nameAr: 'البطاقة الضريبية', kind: 'tax-card',
+      formats: ['PDF','JPG'], maxSize: 5, files: { mode: 'single', labels: [] },
       desc: 'Valid tax registration card issued by the authority.',
       infoFields: [
         { label: 'Tax Registration Number', type: 'text', required: true, options: [], pattern: '^[0-9]{9}$' },
@@ -727,6 +831,7 @@
         { label: 'Taxable Activity', type: 'text', required: false, options: [], pattern: '' }
       ] },
     { id: 4, name: 'Bank Statement', nameAr: 'كشف حساب بنكي', kind: 'bank-statement',
+      formats: ['PDF'], maxSize: 10, files: { mode: 'unlabeled', labels: [] },
       desc: 'Recent statement confirming the settlement account.',
       infoFields: [
         { label: 'Account Holder Name', type: 'text', required: true, options: [], pattern: '' },
@@ -734,6 +839,7 @@
         { label: 'Bank Name', type: 'text', required: true, options: [], pattern: '' }
       ] },
     { id: 5, name: 'Signed Contract', nameAr: 'العقد الموقع', kind: 'contract',
+      formats: ['PDF'], maxSize: 15, files: { mode: 'unlabeled', labels: [] },
       desc: 'Merchant service agreement, signed and stamped.',
       infoFields: [
         { label: 'Authorized Signatory', type: 'text', required: true, options: [], pattern: '' },
@@ -741,6 +847,7 @@
         { label: 'Contract Reference', type: 'text', required: false, options: [], pattern: '' }
       ] },
     { id: 6, name: 'Proof of Address', nameAr: 'إثبات العنوان', kind: 'proof-address',
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'single', labels: [] },
       desc: 'Utility bill or lease dated within the last 3 months.',
       infoFields: [
         { label: 'Address on Document', type: 'text', required: true, options: [], pattern: '' },
@@ -784,6 +891,11 @@
           nameAr: rt.nameAr || '',
           sub: rt.desc || '',
           icon: ICONS[rt.kind] || ICONS.generic,
+          /* How the files themselves must arrive — set on the type in Document Types
+             under "File upload rule", and enforced by the upload drawer. */
+          files: rt.files || { mode: 'single', labels: [] },
+          formats: (rt.formats && rt.formats.length) ? rt.formats : ['PDF','JPG','PNG'],
+          maxSize: rt.maxSize || 5,
           fields: rt.infoFields.map(f => {
             const meta = FIELD_META[id + '|' + f.label] || {};
             // Field type + regex rule now come LIVE from Document Types (Text / Number /
@@ -875,6 +987,39 @@
   }
   function persist() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, events })); } catch (e) {}
+  }
+
+  /* The uploads the account arrived with predate anything captured here, so on a
+     store with no history at all we lay them down as events. Times line up with the
+     "last update" column, and the uploader is the agent who filed them. */
+  const SEEDED_UPLOADER = 'mhegab@elements-ft.com';
+  const SEED_EVENTS = [
+    { doc: 'utility',         h: 17, m: 15, day: 0, file: 'utility_bill.pdf' },
+    { doc: 'tax',             h: 16, m: 45, day: 0, file: 'tax_id_card.pdf' },
+    { doc: 'cr',              h: 15, m: 25, day: 0, file: 'commercial_registration.pdf' },
+    { doc: 'nid',             h: 15, m: 25, day: 0, file: 'national_id_front.pdf, national_id_back.pdf' },
+    { doc: 'bank_statement',  h: 11, m: 10, day: 1, file: 'bank_statement.pdf' },
+    { doc: 'signed_contract', h: 17, m: 31, day: 5, file: 'signed_contract.pdf' }
+  ];
+  function seedEvents() {
+    if (events.length) return;
+    const now = Date.now();
+    events = SEED_EVENTS.map(sv => {
+      const d = new Date();
+      d.setDate(d.getDate() - sv.day);
+      d.setHours(sv.h, sv.m, 0, 0);
+      /* These are meant to be history. A time later in the day than right now would
+         land in the future and sort above live activity, so step it back a day. */
+      if (d.getTime() > now) d.setDate(d.getDate() - 1);
+      const dt = DOC_TYPES.find(x => x.id === sv.doc);
+      const n = sv.file.split(', ').length;
+      return {
+        type: 'uploaded', doc: sv.doc, at: d.getTime(), by: SEEDED_UPLOADER,
+        text: 'uploaded <b>' + n + ' file' + (n > 1 ? 's' : '') + '</b> (' + esc(sv.file) +
+              ') as <b>V1</b> of <b>' + esc(dt ? dt.name : sv.doc) + '</b>',
+        changes: []
+      };
+    }).sort((a, b) => b.at - a.at);
   }
 
   /* ── Drawer state ──
@@ -1123,16 +1268,25 @@
   }
 
   /* ── Drawer · Audit Logs tab: this document type's events only ── */
-  function eventItemHTML(e) {
+  /* `withScope` adds the chip naming which document the event belongs to — wanted on
+     the tab-level feed, where every document's events are mixed, and pointless inside
+     a drawer that is already scoped to one document. */
+  function eventItemHTML(e, withScope) {
     const detail = e.changes && e.changes.length
       ? '<ul class="ev-changes">' + e.changes.map(c =>
           '<li><span class="fld">' + esc(c.label) + '</span> — ' +
           valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
       : '';
+    let scope = '';
+    if (withScope) {
+      const dt = e.doc && DOC_TYPES.find(d => d.id === e.doc);
+      scope = dt ? '<span class="ev-scope">' + esc(dt.name) + '</span>'
+                 : '<span class="ev-scope general">This tab</span>';
+    }
     return '<div class="event-item">' +
       '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
       '<div class="ev-body">' +
-        '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
+        '<div class="ev-ts">' + fmtStamp(e.at) + scope + '</div>' +
         '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
         detail +
       '</div>' +
@@ -1141,7 +1295,9 @@
   function drawerAuditHTML(dt) {
     const mine = events.filter(e => e.doc === dt.id);
     if (!mine.length) return '<div class="events-empty show">No changes recorded yet for this document.</div>';
-    return mine.map(eventItemHTML).join('');
+    /* Wrapped, not passed by reference: map would hand the index in as `withScope`
+       and stamp a document chip on every entry after the first. */
+    return mine.map(e => eventItemHTML(e)).join('');
   }
 
   function renderDrawer() {
@@ -1241,12 +1397,17 @@
   /* ── Events ── */
   const EV_ICON = {
     uploaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 7.5 12 3m0 0L7.5 7.5M12 3v13.5"/></svg>',
+    downloaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>',
+    previewed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
     captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
     updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>'
   };
 
   function addEvent(type, docId, text, changes) {
     events.unshift({ type, doc: docId, at: Date.now(), by: CURRENT_USER, text, changes: changes || [] });
+    /* The feed is newest-first, so a new entry belongs on page 1 — otherwise
+       recording an action appears to do nothing. */
+    eventsPage.page = 1;
     persist();
   }
 
@@ -1330,6 +1491,7 @@
     attemptedSave = false;
     renderDrawer();          /* stays open, refreshed with the saved values and audit entry */
     renderAllDocs();
+    renderEvents();
     toast(dt.name + ' info saved.');
   }
 
@@ -1375,7 +1537,8 @@
 
   function renderAllDocs() {
     const types = recordableTypes();
-    const rows = types.map(dt => {
+    const { rows: pageTypes, totalPages, info } = paginate(types, docsPage);
+    const rows = pageTypes.map(dt => {
       const files = docsForType(dt.id);
       const meta = DOCS_TABLE_META[dt.id] || {};
       const version = files[0] ? files[0].version : '';
@@ -1396,6 +1559,8 @@
     $('allDocsBody').innerHTML = rows.join('');
     $('allDocsEmpty').style.display = types.length ? 'none' : '';
     $('checkAllDocs').checked = false;
+    renderPagination('docsPaginationBar', 'docsPagination', 'docsPageInfo',
+      docsPage, types.length, totalPages, info);
     $('allDocsSub').textContent = types.length
       ? types.length + (types.length === 1 ? ' document' : ' documents') + ' on this account'
       : 'Nothing uploaded on this account yet';
@@ -1406,22 +1571,106 @@
   }
 
   /* ══════════════════════════════════════════════════════════════
+     8a. Pagination — one helper for the listing and the events feed
+     ══════════════════════════════════════════════════════════════ */
+  const CHEV_L = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+  const CHEV_R = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
+  const docsPage   = { page: 1, perPage: 10 };
+  const eventsPage = { page: 1, perPage: 5 };
+
+  /* Clamps the page, then returns the slice to draw plus the range for the info line. */
+  function paginate(items, state) {
+    const totalPages = Math.max(1, Math.ceil(items.length / state.perPage));
+    if (state.page > totalPages) state.page = totalPages;
+    const start = (state.page - 1) * state.perPage;
+    return {
+      rows: items.slice(start, start + state.perPage),
+      totalPages,
+      info: items.length
+        ? (start + 1) + ' - ' + Math.min(start + state.perPage, items.length) + ' of ' + items.length
+        : '0 - 0 of 0'
+    };
+  }
+
+  function renderPagination(barId, listId, infoId, state, total, totalPages, info) {
+    $(infoId).textContent = info;
+    const btn = (label, page, opts) =>
+      '<button class="page-btn' + (opts && opts.active ? ' active' : '') + '"' +
+      (opts && opts.disabled ? ' disabled' : '') + ' data-page="' + page + '">' + label + '</button>';
+    let html = btn(CHEV_L, state.page - 1, { disabled: state.page <= 1 });
+    for (let i = 1; i <= totalPages; i++) html += btn(i, i, { active: i === state.page });
+    html += btn(CHEV_R, state.page + 1, { disabled: state.page >= totalPages });
+    $(listId).innerHTML = html;
+    /* One row of results needs no controls, but the count line still earns its place. */
+    $(barId).style.display = total ? '' : 'none';
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     8c. Render — Events: this tab's activity and every document's, together
+     ══════════════════════════════════════════════════════════════ */
+  function renderEvents() {
+    const all = events.slice().sort((a, b) => b.at - a.at);
+    const { rows, totalPages, info } = paginate(all, eventsPage);
+    $('eventsFeed').innerHTML = rows.map(e => eventItemHTML(e, true)).join('');
+    $('eventsEmpty').classList.toggle('show', !all.length);
+    renderPagination('eventsPaginationBar', 'eventsPagination', 'eventsPageInfo',
+      eventsPage, all.length, totalPages, info);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      8b. Upload document — side drawer with the document type picker
          The type list is the predefined set from Document Types (plus Passport
          and VAT), so an upload is always filed against a known type.
      ══════════════════════════════════════════════════════════════ */
-  let uploadFiles = [];          // { name, size } — what's attached but not yet uploaded
+  let uploadFiles = [];          // { name, size, label } — attached but not yet uploaded
+  let uploadRejects = [];        // why anything just dropped was refused
   let uploadSeq = SEED_ACCOUNT_DOCS.length;
 
   const FILE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
   const X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
   const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
 
+  /* ── The file rule ──
+     Every type carries one, authored in Document Types:
+       single    → exactly one file
+       labeled   → one file per named slot, every slot required
+       unlabeled → any number of files
+     Formats and the size cap come from the same definition. */
+  const RULE_MODE_TEXT = {
+    single:    { name: 'Single file',              hint: 'One file only.' },
+    labeled:   { name: 'Multiple \u2014 fixed labels', hint: 'One file per named slot. Every slot is required.' },
+    unlabeled: { name: 'Multiple \u2014 no labels',    hint: 'Any number of files.' }
+  };
+  const RULE_ICON = {
+    single: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>',
+    labeled: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>',
+    unlabeled: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>'
+  };
+  const ALERT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>';
+
+  const ruleOf = dt => (dt && dt.files) || { mode: 'single', labels: [] };
+  const labelsOf = dt => (ruleOf(dt).labels || []).map(l => l.name).filter(Boolean);
+  const formatsOf = dt => (dt && dt.formats && dt.formats.length) ? dt.formats : ['PDF','JPG','PNG'];
+  const maxBytesOf = dt => ((dt && dt.maxSize) || 5) * 1048576;
+  const acceptAttr = dt => formatsOf(dt).map(f => '.' + f.toLowerCase()).join(',') +
+    (formatsOf(dt).includes('JPG') ? ',.jpeg' : '');
+  const extOf = n => (String(n).split('.').pop() || '').toUpperCase().replace('JPEG', 'JPG');
+
+  /* Why a file can't be attached to this type, or null when it can. */
+  function rejectReason(dt, f) {
+    if (!formatsOf(dt).includes(extOf(f.name)))
+      return esc(f.name) + ' is not ' + formatsOf(dt).join(', ') + '.';
+    if (f.size > maxBytesOf(dt))
+      return esc(f.name) + ' is ' + fmtSize(f.size) + ' \u2014 over the ' + dt.maxSize + ' MB limit.';
+    return null;
+  }
+
   function openUploadDrawer() {
     uploadFiles = [];
-    $('uploadType').innerHTML = '<option value="">Select a document type…</option>' +
+    uploadRejects = [];
+    $('uploadType').innerHTML = '<option value="">Select a document type\u2026</option>' +
       DOC_TYPES.map(dt => '<option value="' + dt.id + '">' + esc(dt.name) + '</option>').join('');
-    $('uploadInput').value = '';
     renderUploadDrawer();
     $('uploadBackdrop').classList.add('open');
     setTimeout(() => $('uploadType').focus(), 0);
@@ -1430,42 +1679,159 @@
   function closeUploadDrawer() {
     $('uploadBackdrop').classList.remove('open');
     uploadFiles = [];
+    uploadRejects = [];
+  }
+
+  /* One attached file's card. `slot` names the label it fills, when there is one. */
+  function fileCardHTML(f, idx) {
+    return '<div class="up-file">' + FILE_ICON +
+      '<div class="uf-body"><div class="uf-name">' + esc(f.name) + '</div>' +
+      '<div class="uf-size">' + fmtSize(f.size) + '</div></div>' +
+      '<button class="uf-remove" type="button" data-remove-file="' + idx + '" aria-label="Remove ' + esc(f.name) + '">' + X_ICON + '</button>' +
+    '</div>';
+  }
+
+  function dropzoneHTML(dt, slot, slim) {
+    const many = ruleOf(dt).mode === 'unlabeled';
+    return '<label class="up-dropzone' + (slim ? ' slim' : '') + '"' +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>' +
+      '<span class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</span>' +
+      '<span class="dz-sub">' + formatsOf(dt).join(', ') + ' \u00b7 up to ' + dt.maxSize + ' MB' +
+        (many ? ' \u00b7 one or more files' : ' \u00b7 one file') + '</span>' +
+      '<input type="file" accept="' + acceptAttr(dt) + '"' + (many ? ' multiple' : '') +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') + ' class="up-input" hidden>' +
+    '</label>';
+  }
+
+  /* The file area, shaped by the rule. */
+  function fileAreaHTML(dt) {
+    if (!dt) return '';
+    const mode = ruleOf(dt).mode;
+    const errs = uploadRejects.length
+      ? '<div class="up-error">' + ALERT_ICON + '<div>' + uploadRejects.join('<br>') + '</div></div>'
+      : '';
+
+    if (mode === 'labeled') {
+      const labels = labelsOf(dt);
+      const slots = labels.map(name => {
+        const idx = uploadFiles.findIndex(f => f.label === name);
+        const filled = idx > -1;
+        return '<div class="up-slot">' +
+          '<div class="up-slot-head">' +
+            '<span class="up-slot-name">' + esc(name) + ' <span class="req">*</span></span>' +
+            '<span class="up-slot-state ' + (filled ? 'filled' : 'empty') + '">' +
+              (filled ? 'Attached' : 'Required') + '</span>' +
+          '</div>' +
+          (filled ? '<div class="up-files" style="margin-top:0;">' + fileCardHTML(uploadFiles[idx], idx) + '</div>'
+                  : dropzoneHTML(dt, name, true)) +
+        '</div>';
+      }).join('');
+      return '<label>Files <span class="req">*</span></label>' + slots + errs;
+    }
+
+    /* single and unlabeled both use one dropzone; single hides it once filled. */
+    const showZone = mode === 'unlabeled' || !uploadFiles.length;
+    return '<label>File' + (mode === 'unlabeled' ? 's' : '') + ' <span class="req">*</span></label>' +
+      (showZone ? dropzoneHTML(dt, null, false) : '') +
+      (uploadFiles.length
+        ? '<div class="up-files">' + uploadFiles.map(fileCardHTML).join('') + '</div>'
+        : '') +
+      errs;
+  }
+
+  function ruleSummaryHTML(dt) {
+    if (!dt) return '';
+    const mode = ruleOf(dt).mode;
+    const t = RULE_MODE_TEXT[mode] || RULE_MODE_TEXT.single;
+    const labels = labelsOf(dt);
+    return '<div class="up-rule">' +
+      '<div class="up-rule-top">' + (RULE_ICON[mode] || RULE_ICON.single) +
+        '<span class="up-rule-mode">' + t.name + '</span></div>' +
+      '<div class="up-rule-meta">' + t.hint + ' ' + formatsOf(dt).join(', ') +
+        ' \u00b7 up to ' + dt.maxSize + ' MB per file.</div>' +
+      (labels.length ? '<div class="up-rule-labels">' +
+        labels.map(l => '<span class="lchip">' + esc(l) + '</span>').join('') + '</div>' : '') +
+    '</div>';
+  }
+
+  /* What is still missing before the upload satisfies the rule. */
+  function ruleGap(dt) {
+    if (!dt) return 'Choose a document type to continue.';
+    const mode = ruleOf(dt).mode;
+    if (mode === 'labeled') {
+      const missing = labelsOf(dt).filter(n => !uploadFiles.some(f => f.label === n));
+      if (!missing.length) return null;
+      return 'Attach a file for ' +
+        (missing.length === 1 ? missing[0] : missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1]) + '.';
+    }
+    if (!uploadFiles.length) {
+      return mode === 'unlabeled' ? 'Attach at least one file to continue.' : 'Attach the file to continue.';
+    }
+    return null;
   }
 
   function renderUploadDrawer() {
     const dt = DOC_TYPES.find(d => d.id === $('uploadType').value);
 
     /* The hint says what the chosen type is, and warns when the account already
-       holds one — that upload files a new version rather than a second row. */
+       holds one \u2014 that upload files a new version rather than a second row. */
     const hint = $('uploadTypeHint');
     if (!dt) {
       hint.className = 'up-hint';
       hint.textContent = 'Only the types defined in Document Types can be uploaded.';
     } else if (docsForType(dt.id).length) {
       hint.className = 'up-hint note';
-      hint.textContent = 'This account already has a ' + dt.name + ' — uploading files a new version of it.';
+      hint.textContent = 'This account already has a ' + dt.name + ' \u2014 uploading files a new version of it.';
     } else {
       hint.className = 'up-hint';
       hint.textContent = dt.sub || 'Uploading adds this document to the account.';
     }
 
-    $('uploadFileList').innerHTML = uploadFiles.map((f, idx) =>
-      '<div class="up-file">' + FILE_ICON +
-        '<div class="uf-body"><div class="uf-name">' + esc(f.name) + '</div>' +
-        '<div class="uf-size">' + fmtSize(f.size) + '</div></div>' +
-        '<button class="uf-remove" type="button" data-remove-file="' + idx + '" aria-label="Remove ' + esc(f.name) + '">' + X_ICON + '</button>' +
-      '</div>').join('');
+    $('uploadRule').innerHTML = ruleSummaryHTML(dt);
+    $('uploadFileField').innerHTML = fileAreaHTML(dt);
 
-    const ready = !!dt && uploadFiles.length > 0;
-    $('uploadSubmitBtn').disabled = !ready;
+    const gap = ruleGap(dt);
+    $('uploadSubmitBtn').disabled = !!gap;
     const note = $('uploadFootNote');
-    if (!dt)                      { note.textContent = 'Choose a document type to continue.'; note.classList.add('blocked'); }
-    else if (!uploadFiles.length) { note.textContent = 'Attach at least one file to continue.'; note.classList.add('blocked'); }
-    else                          { note.textContent = 'Closing this panel discards the upload.'; note.classList.remove('blocked'); }
+    note.textContent = gap || 'Closing this panel discards the upload.';
+    note.classList.toggle('blocked', !!gap);
   }
 
-  function addUploadFiles(fileList) {
-    [...fileList].forEach(f => uploadFiles.push({ name: f.name, size: f.size }));
+  /* Attaching files \u2014 the rule decides how many land and where. */
+  function addUploadFiles(fileList, slot) {
+    const dt = DOC_TYPES.find(d => d.id === $('uploadType').value);
+    if (!dt) return;
+    const mode = ruleOf(dt).mode;
+    uploadRejects = [];
+
+    let incoming = [...fileList];
+    /* Anything the type won't take is refused with the reason, not silently dropped. */
+    incoming = incoming.filter(f => {
+      const why = rejectReason(dt, f);
+      if (why) { uploadRejects.push(why); return false; }
+      return true;
+    });
+
+    if (mode === 'labeled') {
+      /* One file per slot: the newest wins, extras from a multi-drop are refused. */
+      if (slot) {
+        const f = incoming[0];
+        if (f) {
+          const at = uploadFiles.findIndex(x => x.label === slot);
+          const entry = { name: f.name, size: f.size, label: slot };
+          if (at > -1) uploadFiles[at] = entry; else uploadFiles.push(entry);
+        }
+        if (incoming.length > 1) uploadRejects.push(slot + ' takes one file \u2014 only ' + esc(incoming[0].name) + ' was attached.');
+      }
+    } else if (mode === 'single') {
+      const f = incoming[0];
+      if (f) uploadFiles = [{ name: f.name, size: f.size, label: null }];
+      if (incoming.length > 1) uploadRejects.push('This type takes a single file \u2014 only ' + esc(incoming[0].name) + ' was attached.');
+    } else {
+      incoming.forEach(f => uploadFiles.push({ name: f.name, size: f.size, label: null }));
+    }
+
     renderUploadDrawer();
   }
 
@@ -1484,7 +1850,10 @@
     const nextVer = 'V' + (existing.reduce((n, d) => Math.max(n, parseInt(String(d.version).slice(1), 10) || 1), 0) + 1);
     existing.forEach(d => SEED_ACCOUNT_DOCS.splice(SEED_ACCOUNT_DOCS.indexOf(d), 1));
     uploadFiles.forEach(f => SEED_ACCOUNT_DOCS.push({
-      id: 'd' + (++uploadSeq), type: dt.id, name: dt.name, version: nextVer, file: f.name
+      id: 'd' + (++uploadSeq), type: dt.id, version: nextVer, file: f.name,
+      /* Labelled slots keep their name, matching how the seeded uploads read. */
+      name: f.label ? dt.name + ' (' + f.label + ')' : dt.name,
+      label: f.label || null
     }));
 
     const meta = DOCS_TABLE_META[dt.id] || (DOCS_TABLE_META[dt.id] = { expiry: '—' });
@@ -1497,6 +1866,7 @@
       esc(names.join(', ')) + ') as <b>' + esc(nextVer) + '</b> of <b>' + esc(dt.name) + '</b>', []);
 
     const count = uploadFiles.length;
+    docsPage.page = 1;               // a new row can land outside the current page
     closeUploadDrawer();
     renderAll();
     toast(dt.name + ' uploaded — ' + count + ' file' + (count > 1 ? 's' : '') + ' filed as ' + nextVer + '.');
@@ -1507,6 +1877,7 @@
      ═══════════════════════════════════════════════════════════════ */
   function renderAll() {
     renderAllDocs();
+    renderEvents();
     renderSimToggle();
     if (openId) renderDrawer();
   }
@@ -1536,6 +1907,11 @@
       const dt = DOC_TYPES.find(d => d.id === row);
       const action = menuAction.getAttribute('data-menu-action');
       closeRowMenus();
+      if (dt) {
+        addEvent(action === 'preview' ? 'previewed' : 'downloaded', dt.id,
+          (action === 'preview' ? 'previewed <b>' : 'downloaded <b>') + esc(dt.name) + '</b>', []);
+        renderEvents();
+      }
       toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + '.');
       return;
     }
@@ -1546,17 +1922,34 @@
       document.querySelectorAll('[data-row-check]').forEach(c => c.checked = checked);
       return;
     }
-    if (e.target.closest('#btnDownloadAll')) { toast('Downloading all documents on this account.'); return; }
+    if (e.target.closest('#btnDownloadAll')) {
+      const n = recordableTypes().length;
+      addEvent('downloaded', null, 'downloaded <b>all documents</b> on this account (' + n +
+        ' document' + (n === 1 ? '' : 's') + ')', []);
+      renderEvents();
+      toast('Downloading all documents on this account.');
+      return;
+    }
 
     /* Upload document opens its own drawer, where the type is chosen. */
     if (e.target.closest('#btnUploadDoc')) { openUploadDrawer(); return; }
     if (e.target.closest('#uploadClose') || e.target.closest('#uploadCancelBtn')) { closeUploadDrawer(); return; }
     if (e.target === $('uploadBackdrop')) { closeUploadDrawer(); return; }
     if (e.target.closest('#uploadSubmitBtn')) { submitUpload(); return; }
+    /* Page buttons for both the listing and the events feed. */
+    const pageBtn = e.target.closest('.page-btn[data-page]');
+    if (pageBtn && !pageBtn.disabled) {
+      const inEvents = !!pageBtn.closest('#eventsPagination');
+      const state = inEvents ? eventsPage : docsPage;
+      state.page = Number(pageBtn.getAttribute('data-page'));
+      if (inEvents) renderEvents(); else renderAllDocs();
+      return;
+    }
+
     const rmFile = e.target.closest('[data-remove-file]');
     if (rmFile) {
       uploadFiles.splice(+rmFile.getAttribute('data-remove-file'), 1);
-      $('uploadInput').value = '';
+      uploadRejects = [];
       renderUploadDrawer();
       return;
     }
@@ -1572,19 +1965,32 @@
   document.addEventListener('input', e => { if (e.target.closest('#drawerFieldsPanel')) revalidate(); });
   document.addEventListener('change', e => {
     if (e.target.closest('#drawerFieldsPanel')) revalidate();
-    if (e.target.id === 'uploadType') renderUploadDrawer();
-    if (e.target.id === 'uploadInput') addUploadFiles(e.target.files);
+    if (e.target.id === 'uploadType') { uploadFiles = []; uploadRejects = []; renderUploadDrawer(); }
+    if (e.target.classList && e.target.classList.contains('up-input')) {
+      addUploadFiles(e.target.files, e.target.getAttribute('data-slot'));
+    }
+    if (e.target.id === 'docsRpp')   { docsPage.perPage   = Number(e.target.value); docsPage.page = 1;   renderAllDocs(); }
+    if (e.target.id === 'eventsRpp') { eventsPage.perPage = Number(e.target.value); eventsPage.page = 1; renderEvents(); }
   });
 
-  /* Drag & drop onto the dropzone, same as picking through the file dialog. */
-  const dz = $('uploadDropzone');
-  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.classList.add('drag');
+  /* Drag & drop, same as picking through the file dialog. Delegated, because the
+     dropzones are rebuilt whenever the rule or the attachments change. */
+  const fileField = $('uploadFileField');
+  ['dragenter', 'dragover'].forEach(ev => fileField.addEventListener(ev, e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone) return;
+    e.preventDefault(); zone.classList.add('drag');
   }));
-  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.classList.remove('drag');
+  ['dragleave', 'drop'].forEach(ev => fileField.addEventListener(ev, e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone) return;
+    e.preventDefault(); zone.classList.remove('drag');
   }));
-  dz.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files) addUploadFiles(e.dataTransfer.files); });
+  fileField.addEventListener('drop', e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone || !e.dataTransfer || !e.dataTransfer.files) return;
+    addUploadFiles(e.dataTransfer.files, zone.getAttribute('data-slot'));
+  });
   /* A required field only turns red once the agent has actually left it empty,
      not the instant the drawer opens. 'focusout' bubbles, unlike 'blur'. */
   document.addEventListener('focusout', e => {
@@ -1611,6 +2017,7 @@
 
   /* Go */
   load();
+  seedEvents();      // an account with no stored history still shows how it got here
   renderAll();
 </script>
 <script>
