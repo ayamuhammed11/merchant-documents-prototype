@@ -245,6 +245,16 @@
     color: var(--foreground); cursor: pointer; }
   .row-menu-pop button:hover { background: var(--muted); }
   .row-menu-pop svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
+  /* Download, when a type has more than one version — pick which one, not just
+     the current one. */
+  .row-menu-pop.has-versions { min-width: 208px; }
+  .row-menu-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--cadet-05); padding: 8px 10px 4px; }
+  .row-menu-sep { height: 1px; background: var(--border-subtle); margin: 4px 2px; }
+  .row-menu-pop .rmv-body { display: flex; flex-direction: column; min-width: 0; }
+  .row-menu-pop .rmv-top { display: flex; align-items: center; gap: 6px; }
+  .row-menu-pop .rmv-current { font-size: 11px; font-weight: 700; color: var(--primary); }
+  .row-menu-pop .rmv-date { font-size: 11px; color: var(--cadet-05); margin-top: 1px; }
 
   .docs-empty { text-align: center; font-size: 13px; color: var(--cadet-05); padding: 30px 16px; }
 
@@ -308,25 +318,6 @@
   .up-file .uf-remove:hover { background: var(--muted); color: var(--destructive); }
   .up-file .uf-remove svg { width: 15px; height: 15px; }
 
-  /* ---------- Document preview (lightbox) ---------- */
-  /* Same overlay as the drawers, centered instead of docked to an edge. */
-  .preview-backdrop { justify-content: center; align-items: center; padding: 24px; }
-  .preview-modal { background: #fff; border-radius: 12px; width: 420px; max-width: 100%;
-    max-height: 100%; box-shadow: 0 20px 60px rgba(16,24,40,.25); display: flex; flex-direction: column;
-    overflow: hidden; animation: drawerIn .18s ease; }
-  .preview-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
-  .preview-modal-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700;
-    color: var(--foreground); line-height: 1.3; overflow-wrap: anywhere; }
-  .preview-modal-sub { display: flex; align-items: center; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
-  .preview-modal-sub .dsec-meta { margin: 0; }
-  .preview-modal-body { padding: 22px; overflow-y: auto; }
-  .preview-files { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
-  .preview-files .up-file { cursor: default; }
-  .preview-modal-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    flex-wrap: wrap; padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
-  .preview-note { font-size: 11px; color: var(--cadet-05); line-height: 1.4; max-width: 240px; }
-
   /* ---------- Document drawer ---------- */
   .drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 90;
     justify-content: flex-end; }
@@ -369,18 +360,14 @@
     letter-spacing: .03em; flex-shrink: 0; }
   .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; text-align: right; overflow-wrap: break-word; }
 
-  /* Previous versions — inside the Details tab, below the current document */
-  .version-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-  .version-item { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 14px; }
-  .version-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .version-files { display: flex; flex-direction: column; gap: 1px; margin-top: 6px; }
+  /* Previous versions — inside the Details tab, below the current document. A
+     dropdown, not a card per version, so it stays compact how ever many there are. */
+  .version-picker { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 14px; margin-top: 14px; }
+  .version-picker select.inp { height: 38px; padding: 7px 10px; font-size: 13px; }
+  .version-files { display: flex; flex-direction: column; gap: 1px; margin-top: 10px; }
   .version-files span { font-size: 12px; color: var(--cadet-05); }
   .version-meta { font-size: 11.5px; color: var(--cadet-05); margin-top: 8px; }
-  .version-actions { display: flex; gap: 14px; margin-top: 10px; }
-  .version-actions button { background: none; border: none; padding: 0; font-size: 12px; font-weight: 600;
-    color: var(--primary); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
-  .version-actions button:hover { text-decoration: underline; }
-  .version-actions svg { width: 14px; height: 14px; }
+  .version-picker-foot { display: flex; justify-content: flex-end; margin-top: 12px; }
   .version-empty { font-size: 12.5px; color: var(--cadet-05); margin-top: 14px; }
 
   .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
@@ -693,29 +680,6 @@
           <button class="btn btn-ghost btn-sm" id="uploadCancelBtn" type="button">Cancel</button>
           <button class="btn btn-primary btn-sm" id="uploadSubmitBtn" type="button" disabled>Upload</button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════ Document preview (lightbox) ══════════════════ -->
-  <div class="drawer-backdrop preview-backdrop" id="previewBackdrop">
-    <div class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-      <div class="preview-modal-head">
-        <div>
-          <h2 id="previewTitle">Document</h2>
-          <div class="preview-modal-sub" id="previewSub"></div>
-        </div>
-        <button class="drawer-close" id="previewClose" aria-label="Close" type="button">
-          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="preview-modal-body">
-        <div class="drawer-preview" id="previewIcon" style="margin-bottom:0;"></div>
-        <div class="preview-files" id="previewFiles"></div>
-      </div>
-      <div class="preview-modal-foot">
-        <span class="preview-note">This is a prototype — no real file content is stored, so this stands in for the actual preview.</span>
-        <button class="btn btn-outline btn-sm" id="previewDownloadBtn" type="button">Download</button>
       </div>
     </div>
   </div>
@@ -1353,53 +1317,29 @@
   function versionListHTML(dt) {
     const versions = versionsForType(dt.id);
     if (!versions.length) return '<div class="version-empty">No previous versions for this document.</div>';
-    return '<div class="version-list">' + versions.map(v =>
-      '<div class="version-item">' +
-        '<div class="version-item-top"><span class="ver-pill">' + esc(v.version) + '</span></div>' +
-        '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
-        '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>' +
-        '<div class="version-actions">' +
-          '<button type="button" data-version-action="preview" data-version="' + esc(v.version) + '" data-doctype="' + esc(dt.id) + '">' + EYE_ICON + 'Preview</button>' +
-          '<button type="button" data-version-action="download" data-version="' + esc(v.version) + '" data-doctype="' + esc(dt.id) + '">' + DOWNLOAD_ICON + 'Download</button>' +
-        '</div>' +
-      '</div>'
-    ).join('') + '</div>';
+    return '<div class="version-picker" data-doctype="' + esc(dt.id) + '">' +
+      '<select class="inp" id="verSelect">' +
+        versions.map(v => '<option value="' + esc(v.version) + '">' + esc(v.version) + ' \u2014 ' + esc(fmtRelative(v.uploadedAt)) + '</option>').join('') +
+      '</select>' +
+      '<div id="verPickerBody"></div>' +
+      '<div class="version-picker-foot">' +
+        '<button class="btn btn-outline btn-sm" type="button" id="verDownloadBtn">' + DOWNLOAD_ICON + 'Download</button>' +
+      '</div>' +
+    '</div>';
   }
 
-  /* ── Document preview (lightbox) ──
-     Opens over whichever drawer is behind it (row menu, or a previous version
-     inside the Details tab) to show what's on file for one version of a type.
-     A prototype has no real file bytes to render, so this stands in for the
-     actual preview: the type's icon, plus a card per attached file. */
-  let previewCtx = null;      // { dt, files, version } — what Download in the footer acts on
-
-  function openPreviewModal(dt, files, version) {
-    if (!dt || !files || !files.length) return;
-    previewCtx = { dt, files, version: version || (files[0] && files[0].version) };
-
-    $('previewTitle').textContent = dt.name;
-    const primary = files[0];
-    const subParts = [];
-    if (previewCtx.version) subParts.push('<span class="ver-pill">' + esc(previewCtx.version) + '</span>');
-    if (primary) subParts.push('<span class="dsec-meta">Uploaded by ' + esc(primary.uploadedBy) +
-      ' · ' + esc(fmtRelative(primary.uploadedAt)) + '</span>');
-    $('previewSub').innerHTML = subParts.join('');
-
-    $('previewIcon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' + dt.icon + '</svg>';
-    $('previewFiles').innerHTML = files.map(f => {
-      const ext = extOf(f.file || '');
-      return '<div class="up-file">' + FILE_ICON +
-        '<div class="uf-body"><div class="uf-name">' + esc(f.file || '') + '</div></div>' +
-        (ext ? '<span class="f-tag side">' + esc(ext) + '</span>' : '') +
-      '</div>';
-    }).join('');
-
-    $('previewBackdrop').classList.add('open');
-  }
-
-  function closePreviewModal() {
-    $('previewBackdrop').classList.remove('open');
-    previewCtx = null;
+  /* The file list + uploader/date under the dropdown, for whichever version is
+     currently selected. Re-run on open and on every change of the select. */
+  function renderVersionPickerBody() {
+    const picker = document.querySelector('.version-picker');
+    if (!picker) return;
+    const dt = DOC_TYPES.find(d => d.id === picker.getAttribute('data-doctype'));
+    const select = $('verSelect');
+    const v = dt && versionsForType(dt.id).find(x => x.version === select.value);
+    if (!v) return;
+    $('verPickerBody').innerHTML =
+      '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+      '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>';
   }
 
   /* ── Drawer · Document info fields tab: the editable form ── */
@@ -1463,6 +1403,7 @@
     $('drawerDetailsPanel').innerHTML = drawerDetailsHTML(dt, files);
     $('drawerFieldsPanel').innerHTML = drawerFieldsHTML(dt);
     $('drawerAuditPanel').innerHTML = drawerAuditHTML(dt);
+    renderVersionPickerBody();     // the dropdown's own file list starts on its first option
     switchDrawerTab(activeDrawerTab);
   }
 
@@ -1676,12 +1617,34 @@
   const EYE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>';
   const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
 
-  function rowMenuHTML(rowId) {
+  function rowMenuHTML(dt) {
+    const rowId = dt.id;
+    const current = docsForType(rowId)[0];
+    const previous = versionsForType(rowId);
+
+    /* One version on file: Download stays a single action. More than one: it
+       becomes a picker, current first, so the agent chooses which to download
+       instead of always getting the latest. */
+    const downloadSection = !previous.length
+      ? '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>'
+      : '<div class="row-menu-label">Download version</div>' +
+        [{ version: current.version, uploadedAt: current.uploadedAt, isCurrent: true }]
+          .concat(previous.map(v => ({ version: v.version, uploadedAt: v.uploadedAt, isCurrent: false })))
+          .map(v => '<button type="button" data-version-download data-version="' + esc(v.version) + '" data-doctype="' + esc(rowId) + '">' +
+            DOWNLOAD_ICON +
+            '<span class="rmv-body">' +
+              '<span class="rmv-top"><span class="ver-pill">' + esc(v.version) + '</span>' +
+                (v.isCurrent ? '<span class="rmv-current">Current</span>' : '') + '</span>' +
+              '<span class="rmv-date">' + esc(fmtRelative(v.uploadedAt)) + '</span>' +
+            '</span>' +
+          '</button>').join('');
+
     return '<div class="row-menu" data-row-menu="' + rowId + '">' +
       '<button class="row-menu-btn" type="button" data-menu-toggle="' + rowId + '" aria-label="Row actions">' + KEBAB + '</button>' +
-      '<div class="row-menu-pop" id="menu_' + rowId + '">' +
+      '<div class="row-menu-pop' + (previous.length ? ' has-versions' : '') + '" id="menu_' + rowId + '">' +
         '<button type="button" data-menu-action="preview" data-menu-row="' + rowId + '">' + EYE_ICON + 'Preview</button>' +
-        '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>' +
+        (previous.length ? '<div class="row-menu-sep"></div>' : '') +
+        downloadSection +
       '</div>' +
     '</div>';
   }
@@ -1704,7 +1667,7 @@
         '<td>' + esc(uploadedBy) + '</td>' +
         '<td><span class="status-badge ok"><span class="dot"></span>Approved</span></td>' +
         '<td>' + esc(lastUpdate) + '</td>' +
-        '<td class="dt-menu">' + rowMenuHTML(dt.id) + '</td>' +
+        '<td class="dt-menu">' + rowMenuHTML(dt) + '</td>' +
       '</tr>';
     });
     $('allDocsBody').innerHTML = rows.join('');
@@ -2056,8 +2019,10 @@
       const dt = DOC_TYPES.find(d => d.id === row);
       const action = menuAction.getAttribute('data-menu-action');
       closeRowMenus();
+      /* Preview opens the same document details drawer a row-click does — the
+         kebab menu just gives an explicit, discoverable path to it. */
       if (action === 'preview') {
-        if (dt) openPreviewModal(dt, docsForType(dt.id));
+        if (dt) openDrawer(dt.id);
         return;
       }
       /* Only Download is logged — opening a preview doesn't change or move anything. */
@@ -2088,19 +2053,6 @@
     if (e.target.closest('#btnUploadDoc')) { openUploadDrawer(); return; }
     if (e.target.closest('#uploadClose') || e.target.closest('#uploadCancelBtn')) { closeUploadDrawer(); return; }
     if (e.target === $('uploadBackdrop')) { closeUploadDrawer(); return; }
-    if (e.target.closest('#previewClose')) { closePreviewModal(); return; }
-    if (e.target === $('previewBackdrop')) { closePreviewModal(); return; }
-    if (e.target.closest('#previewDownloadBtn')) {
-      if (previewCtx) {
-        const { dt, version } = previewCtx;
-        addEvent('downloaded', dt.id,
-          'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
-        renderEvents();
-        toast('Downloads ' + dt.name + ' ' + version + '.');
-      }
-      closePreviewModal();
-      return;
-    }
     if (e.target.closest('#uploadSubmitBtn')) { submitUpload(); return; }
     /* Page buttons for both the listing and the events feed. */
     const pageBtn = e.target.closest('.page-btn[data-page]');
@@ -2112,22 +2064,29 @@
       return;
     }
 
-    const verAction = e.target.closest('[data-version-action]');
-    if (verAction) {
-      const action = verAction.getAttribute('data-version-action');
-      const version = verAction.getAttribute('data-version');
-      const dt = DOC_TYPES.find(d => d.id === verAction.getAttribute('data-doctype'));
-      if (action === 'preview') {
-        const vg = dt && versionsForType(dt.id).find(v => v.version === version);
-        if (vg) openPreviewModal(dt, vg.files, vg.version);
-        return;
-      }
-      /* Only Download is logged — opening a preview doesn't change or move anything. */
+    const verDownload = e.target.closest('[data-version-download]');
+    if (verDownload) {
+      closeRowMenus();
+      const version = verDownload.getAttribute('data-version');
+      const dt = DOC_TYPES.find(d => d.id === verDownload.getAttribute('data-doctype'));
       if (dt) {
         addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
         renderEvents();
       }
       toast('Downloads ' + (dt ? dt.name : 'this document') + ' ' + version + '.');
+      return;
+    }
+    /* Previous Versions dropdown, inside the drawer — downloads whichever
+       version is currently selected. */
+    if (e.target.closest('#verDownloadBtn')) {
+      const picker = document.querySelector('.version-picker');
+      const dt = picker && DOC_TYPES.find(d => d.id === picker.getAttribute('data-doctype'));
+      const version = $('verSelect') && $('verSelect').value;
+      if (dt && version) {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        renderEvents();
+        toast('Downloads ' + dt.name + ' ' + version + '.');
+      }
       return;
     }
 
@@ -2156,6 +2115,7 @@
     }
     if (e.target.id === 'docsRpp')   { docsPage.perPage   = Number(e.target.value); docsPage.page = 1;   renderAllDocs(); }
     if (e.target.id === 'eventsRpp') { eventsPage.perPage = Number(e.target.value); eventsPage.page = 1; renderEvents(); }
+    if (e.target.id === 'verSelect') renderVersionPickerBody();
   });
 
   /* Drag & drop, same as picking through the file dialog. Delegated, because the
@@ -2186,7 +2146,6 @@
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    if ($('previewBackdrop').classList.contains('open')) { closePreviewModal(); return; }
     if ($('uploadBackdrop').classList.contains('open')) { closeUploadDrawer(); return; }
     if (openId) closeDrawer();
   });

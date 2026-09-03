@@ -14,19 +14,19 @@ Open it: https://ayamuhammed11.github.io/merchant-documents-prototype/
   and Proof of Address, the two types a merchant typically self-uploads, show
   the account owner's name rather than the agent's email.
 - **Document details drawer** — clicking any row opens it, with three tabs:
-  - *Details* — preview, document details, and **Previous Versions**: every
-    superseded upload for that type, kept rather than deleted, each with its
-    own uploader, date, and Preview/Download. Commercial Registration is
-    seeded with a real V1 → V2 history to show this; other types show "No
-    previous versions" until re-uploaded.
+  - *Details* — preview, document details, and **Previous Versions**: a
+    dropdown listing every superseded upload for that type (kept rather than
+    deleted), with the selected version's file(s), uploader and date shown
+    below it, and a Download that acts on whichever version is currently
+    picked. Commercial Registration is seeded with a real V1 → V2 history to
+    show this; other types show "No previous versions" until re-uploaded.
   - *Document info fields* — the editable form, validated live against that
     type's definition.
   - *Audit Logs* — this document's own history.
-- **Preview** — from the row's ⋮ menu or from a Previous Version — opens a
-  lightbox with the document type's icon, its file(s) with extension badges,
-  version, and uploader/date, plus a working Download action. There's no real
-  file storage in this prototype, so the lightbox says so rather than
-  pretending to render content it doesn't have.
+- **Row menu (⋮)** — *Preview* opens the same document details drawer a
+  row-click does. *Download* is a single action normally, or a small picker
+  — current version plus each previous one, dated — when a type has more
+  than one version on file.
 - **Upload document drawer** — pick a document type, and the drawer reshapes
   itself to that type's **file upload rule** as authored in Document Types:
   - *Single file* — one dropzone; a second file replaces the first.
