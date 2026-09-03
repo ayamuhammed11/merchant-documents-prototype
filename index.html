@@ -308,6 +308,25 @@
   .up-file .uf-remove:hover { background: var(--muted); color: var(--destructive); }
   .up-file .uf-remove svg { width: 15px; height: 15px; }
 
+  /* ---------- Document preview (lightbox) ---------- */
+  /* Same overlay as the drawers, centered instead of docked to an edge. */
+  .preview-backdrop { justify-content: center; align-items: center; padding: 24px; }
+  .preview-modal { background: #fff; border-radius: 12px; width: 420px; max-width: 100%;
+    max-height: 100%; box-shadow: 0 20px 60px rgba(16,24,40,.25); display: flex; flex-direction: column;
+    overflow: hidden; animation: drawerIn .18s ease; }
+  .preview-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+  .preview-modal-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700;
+    color: var(--foreground); line-height: 1.3; overflow-wrap: anywhere; }
+  .preview-modal-sub { display: flex; align-items: center; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
+  .preview-modal-sub .dsec-meta { margin: 0; }
+  .preview-modal-body { padding: 22px; overflow-y: auto; }
+  .preview-files { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .preview-files .up-file { cursor: default; }
+  .preview-modal-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap; padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
+  .preview-note { font-size: 11px; color: var(--cadet-05); line-height: 1.4; max-width: 240px; }
+
   /* ---------- Document drawer ---------- */
   .drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 90;
     justify-content: flex-end; }
@@ -581,7 +600,6 @@
               <tr>
                 <th class="dt-check"><input type="checkbox" id="checkAllDocs" aria-label="Select all documents"></th>
                 <th>Document Name</th>
-                <th>Expiry</th>
                 <th>Uploaded by</th>
                 <th>Status</th>
                 <th>Last update</th>
@@ -675,6 +693,29 @@
           <button class="btn btn-ghost btn-sm" id="uploadCancelBtn" type="button">Cancel</button>
           <button class="btn btn-primary btn-sm" id="uploadSubmitBtn" type="button" disabled>Upload</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ Document preview (lightbox) ══════════════════ -->
+  <div class="drawer-backdrop preview-backdrop" id="previewBackdrop">
+    <div class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <div class="preview-modal-head">
+        <div>
+          <h2 id="previewTitle">Document</h2>
+          <div class="preview-modal-sub" id="previewSub"></div>
+        </div>
+        <button class="drawer-close" id="previewClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="preview-modal-body">
+        <div class="drawer-preview" id="previewIcon" style="margin-bottom:0;"></div>
+        <div class="preview-files" id="previewFiles"></div>
+      </div>
+      <div class="preview-modal-foot">
+        <span class="preview-note">This is a prototype — no real file content is stored, so this stands in for the actual preview.</span>
+        <button class="btn btn-outline btn-sm" id="previewDownloadBtn" type="button">Download</button>
       </div>
     </div>
   </div>
@@ -955,6 +996,9 @@
     return d.getTime();
   }
   const SEEDED_UPLOADER = 'mhegab@elements-ft.com';
+  /* The account owner (Business Info → Owner Contacts). Documents a merchant files
+     themselves are attributed to this name, not the agent's email. */
+  const MERCHANT_UPLOADER = 'Elon Space';
 
   /* A superseded version is kept, not deleted, so it stays reachable as a previous
      version — `active` marks which entries are each type's current one. */
@@ -971,27 +1015,15 @@
       uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
     { id:'d4', type:'tax',              name:'Tax ID Card',           version:'V1', file:'tax_id_card.pdf',
       uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 16, 45), active: true },
+    /* Filed by the merchant, not the agent — Proof of Address and Bank Statement
+       are the two types typically self-uploaded rather than collected in person. */
     { id:'d6', type:'utility',          name:'Utility Bill',          version:'V1', file:'utility_bill.pdf',
-      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 17, 15), active: true },
+      uploadedBy: MERCHANT_UPLOADER, uploadedAt: seedTime(0, 17, 15), active: true },
     { id:'d7', type:'bank_statement',   name:'Bank Statement',        version:'V1', file:'bank_statement.pdf',
-      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(1, 11, 10), active: true },
+      uploadedBy: MERCHANT_UPLOADER, uploadedAt: seedTime(1, 11, 10), active: true },
     { id:'d8', type:'signed_contract',  name:'Signed Contract',       version:'V1', file:'signed_contract.pdf',
       uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(5, 17, 31), active: true }
   ];
-
-  /* Display-only metadata for the "All documents" table — expiry, uploader and last-update
-     per document type. Expiry is shown only for the two types Document Info tracks an
-     expiry date for (National ID, Commercial Register), matching that feature exactly. */
-  /* Uploader and last-update are no longer stored here — they come from each type's
-     current version entry instead, since those differ by upload, not by type. */
-  const DOCS_TABLE_META = {
-    nid:             { expiry: 'Jan 2028' },
-    cr:              { expiry: 'May 2027' },
-    tax:             { expiry: '—' },
-    utility:         { expiry: '—' },
-    bank_statement:  { expiry: '—' },
-    signed_contract: { expiry: '—' }
-  };
 
   /* Prototype-only: lets this demo show what the tab looks like on an account
      with nothing uploaded yet, without needing a second HTML file. Not persisted —
@@ -1334,6 +1366,42 @@
     ).join('') + '</div>';
   }
 
+  /* ── Document preview (lightbox) ──
+     Opens over whichever drawer is behind it (row menu, or a previous version
+     inside the Details tab) to show what's on file for one version of a type.
+     A prototype has no real file bytes to render, so this stands in for the
+     actual preview: the type's icon, plus a card per attached file. */
+  let previewCtx = null;      // { dt, files, version } — what Download in the footer acts on
+
+  function openPreviewModal(dt, files, version) {
+    if (!dt || !files || !files.length) return;
+    previewCtx = { dt, files, version: version || (files[0] && files[0].version) };
+
+    $('previewTitle').textContent = dt.name;
+    const primary = files[0];
+    const subParts = [];
+    if (previewCtx.version) subParts.push('<span class="ver-pill">' + esc(previewCtx.version) + '</span>');
+    if (primary) subParts.push('<span class="dsec-meta">Uploaded by ' + esc(primary.uploadedBy) +
+      ' · ' + esc(fmtRelative(primary.uploadedAt)) + '</span>');
+    $('previewSub').innerHTML = subParts.join('');
+
+    $('previewIcon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' + dt.icon + '</svg>';
+    $('previewFiles').innerHTML = files.map(f => {
+      const ext = extOf(f.file || '');
+      return '<div class="up-file">' + FILE_ICON +
+        '<div class="uf-body"><div class="uf-name">' + esc(f.file || '') + '</div></div>' +
+        (ext ? '<span class="f-tag side">' + esc(ext) + '</span>' : '') +
+      '</div>';
+    }).join('');
+
+    $('previewBackdrop').classList.add('open');
+  }
+
+  function closePreviewModal() {
+    $('previewBackdrop').classList.remove('open');
+    previewCtx = null;
+  }
+
   /* ── Drawer · Document info fields tab: the editable form ── */
   function drawerFieldsHTML(dt) {
     const filled = dt.fields.filter(f => valueOf(f)).length;
@@ -1623,7 +1691,6 @@
     const { rows: pageTypes, totalPages, info } = paginate(types, docsPage);
     const rows = pageTypes.map(dt => {
       const files = docsForType(dt.id);
-      const meta = DOCS_TABLE_META[dt.id] || {};
       const version = files[0] ? files[0].version : '';
       const uploadedBy = files[0] ? files[0].uploadedBy : '—';
       const lastUpdate = files[0] ? fmtRelative(files[0].uploadedAt) : '—';
@@ -1634,7 +1701,6 @@
             (version ? '<span class="ver-pill">' + esc(version) + '</span>' : '') + '</div>' +
           '<div class="dn-files">' + files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
         '</div></td>' +
-        '<td>' + esc(meta.expiry || '—') + '</td>' +
         '<td>' + esc(uploadedBy) + '</td>' +
         '<td><span class="status-badge ok"><span class="dot"></span>Approved</span></td>' +
         '<td>' + esc(lastUpdate) + '</td>' +
@@ -1990,12 +2056,16 @@
       const dt = DOC_TYPES.find(d => d.id === row);
       const action = menuAction.getAttribute('data-menu-action');
       closeRowMenus();
+      if (action === 'preview') {
+        if (dt) openPreviewModal(dt, docsForType(dt.id));
+        return;
+      }
       /* Only Download is logged — opening a preview doesn't change or move anything. */
-      if (dt && action === 'download') {
+      if (dt) {
         addEvent('downloaded', dt.id, 'downloaded <b>' + esc(dt.name) + '</b>', []);
         renderEvents();
       }
-      toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + '.');
+      toast('Downloads ' + (dt ? dt.name : 'this document') + '.');
       return;
     }
     if (!e.target.closest('.row-menu')) closeRowMenus();
@@ -2018,6 +2088,19 @@
     if (e.target.closest('#btnUploadDoc')) { openUploadDrawer(); return; }
     if (e.target.closest('#uploadClose') || e.target.closest('#uploadCancelBtn')) { closeUploadDrawer(); return; }
     if (e.target === $('uploadBackdrop')) { closeUploadDrawer(); return; }
+    if (e.target.closest('#previewClose')) { closePreviewModal(); return; }
+    if (e.target === $('previewBackdrop')) { closePreviewModal(); return; }
+    if (e.target.closest('#previewDownloadBtn')) {
+      if (previewCtx) {
+        const { dt, version } = previewCtx;
+        addEvent('downloaded', dt.id,
+          'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        renderEvents();
+        toast('Downloads ' + dt.name + ' ' + version + '.');
+      }
+      closePreviewModal();
+      return;
+    }
     if (e.target.closest('#uploadSubmitBtn')) { submitUpload(); return; }
     /* Page buttons for both the listing and the events feed. */
     const pageBtn = e.target.closest('.page-btn[data-page]');
@@ -2034,12 +2117,17 @@
       const action = verAction.getAttribute('data-version-action');
       const version = verAction.getAttribute('data-version');
       const dt = DOC_TYPES.find(d => d.id === verAction.getAttribute('data-doctype'));
+      if (action === 'preview') {
+        const vg = dt && versionsForType(dt.id).find(v => v.version === version);
+        if (vg) openPreviewModal(dt, vg.files, vg.version);
+        return;
+      }
       /* Only Download is logged — opening a preview doesn't change or move anything. */
-      if (dt && action === 'download') {
+      if (dt) {
         addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
         renderEvents();
       }
-      toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + ' ' + version + '.');
+      toast('Downloads ' + (dt ? dt.name : 'this document') + ' ' + version + '.');
       return;
     }
 
@@ -2098,6 +2186,7 @@
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    if ($('previewBackdrop').classList.contains('open')) { closePreviewModal(); return; }
     if ($('uploadBackdrop').classList.contains('open')) { closeUploadDrawer(); return; }
     if (openId) closeDrawer();
   });
