@@ -12,8 +12,14 @@ Open it: https://ayamuhammed11.github.io/merchant-documents-prototype/
   directly over the listing. The listing is paginated, with a rows-per-page
   control.
 - **Document details drawer** — clicking any row opens it, with three tabs:
-  *Details* (preview and document details), *Document info fields* (the editable
-  form, validated live against that type's definition), and *Audit Logs*.
+  - *Details* — preview, document details, and **Previous Versions**: every
+    superseded upload for that type, kept rather than deleted, each with its
+    own uploader, date, and Preview/Download. Commercial Registration is
+    seeded with a real V1 → V2 history to show this; other types show "No
+    previous versions" until re-uploaded.
+  - *Document info fields* — the editable form, validated live against that
+    type's definition.
+  - *Audit Logs* — this document's own history.
 - **Upload document drawer** — pick a document type, and the drawer reshapes
   itself to that type's **file upload rule** as authored in Document Types:
   - *Single file* — one dropzone; a second file replaces the first.
@@ -23,7 +29,9 @@ Open it: https://ayamuhammed11.github.io/merchant-documents-prototype/
 
   Upload stays disabled until the rule is satisfied, and the footer names what is
   still missing. Accepted formats and the per-file size cap come from the same
-  definition and are enforced, saying what was refused and why.
+  definition and are enforced, saying what was refused and why. Re-uploading a
+  type supersedes its current version rather than replacing it outright — the
+  old one moves into Previous Versions.
 - **Events** — everything done on the tab and inside its documents: uploads,
   downloads, previews, and the info fields captured or changed on each document.
   Each entry is chipped with the document it belongs to, or *This tab* for
@@ -35,8 +43,8 @@ It is a single self-contained HTML file — no build step, no dependencies beyon
 Google Fonts. Open `index.html` directly, or serve the folder.
 
 Values captured in the info fields persist to `localStorage`, so a reload keeps
-them, as does the event history. The *Simulate: no documents uploaded* control
-flips the tab to an account with nothing uploaded, and back.
+them, as does the event and version history. The *Simulate: no documents
+uploaded* control flips the tab to an account with nothing uploaded, and back.
 
 Document types, their info fields and their file rules are read from the
 Document Types module when it has been used in the same browser; otherwise the

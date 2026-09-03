@@ -350,6 +350,20 @@
     letter-spacing: .03em; flex-shrink: 0; }
   .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; text-align: right; overflow-wrap: break-word; }
 
+  /* Previous versions — inside the Details tab, below the current document */
+  .version-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .version-item { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 14px; }
+  .version-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .version-files { display: flex; flex-direction: column; gap: 1px; margin-top: 6px; }
+  .version-files span { font-size: 12px; color: var(--cadet-05); }
+  .version-meta { font-size: 11.5px; color: var(--cadet-05); margin-top: 8px; }
+  .version-actions { display: flex; gap: 14px; margin-top: 10px; }
+  .version-actions button { background: none; border: none; padding: 0; font-size: 12px; font-weight: 600;
+    color: var(--primary); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+  .version-actions button:hover { text-decoration: underline; }
+  .version-actions svg { width: 14px; height: 14px; }
+  .version-empty { font-size: 12.5px; color: var(--cadet-05); margin-top: 14px; }
+
   .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
 
@@ -929,26 +943,54 @@
          The cards on this tab are derived from these — there is no
          "add" step, because what exists is decided by the uploads.
      ═══════════════════════════════════════════════════════════════ */
+  /* Every seeded timestamp on this page is built the same way: an offset from
+     today, stepped back a day if that would land in the future, so "now" always
+     sorts above history no matter what time the page happens to load. */
+  function seedTime(dayOffset, h, m) {
+    const now = Date.now();
+    const d = new Date();
+    d.setDate(d.getDate() - dayOffset);
+    d.setHours(h, m, 0, 0);
+    if (d.getTime() > now) d.setDate(d.getDate() - 1);
+    return d.getTime();
+  }
+  const SEEDED_UPLOADER = 'mhegab@elements-ft.com';
+
+  /* A superseded version is kept, not deleted, so it stays reachable as a previous
+     version — `active` marks which entries are each type's current one. */
   const SEED_ACCOUNT_DOCS = [
-    { id:'d1', type:'nid',              name:'National ID (Front)',   version:'V1', file:'national_id_front.pdf' },
-    { id:'d2', type:'nid',              name:'National ID (Back)',    version:'V1', file:'national_id_back.pdf' },
-    { id:'d3', type:'cr',               name:'Commercial Register',   version:'V2', file:'commercial_registration.pdf' },
-    { id:'d4', type:'tax',              name:'Tax ID Card',           version:'V1', file:'tax_id_card.pdf' },
-    { id:'d6', type:'utility',          name:'Utility Bill',          version:'V1', file:'utility_bill.pdf' },
-    { id:'d7', type:'bank_statement',   name:'Bank Statement',        version:'V1', file:'bank_statement.pdf' },
-    { id:'d8', type:'signed_contract',  name:'Signed Contract',       version:'V1', file:'signed_contract.pdf' }
+    { id:'d1', type:'nid',              name:'National ID (Front)',   version:'V1', file:'national_id_front.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    { id:'d2', type:'nid',              name:'National ID (Back)',    version:'V1', file:'national_id_back.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    /* Commercial Registration carries one prior version, so this is the type that
+       demonstrates "previous versions" in the drawer out of the box. */
+    { id:'d0', type:'cr',               name:'Commercial Register',   version:'V1', file:'commercial_registration_v1.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(48, 10, 5),  active: false },
+    { id:'d3', type:'cr',               name:'Commercial Register',   version:'V2', file:'commercial_registration.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    { id:'d4', type:'tax',              name:'Tax ID Card',           version:'V1', file:'tax_id_card.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 16, 45), active: true },
+    { id:'d6', type:'utility',          name:'Utility Bill',          version:'V1', file:'utility_bill.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 17, 15), active: true },
+    { id:'d7', type:'bank_statement',   name:'Bank Statement',        version:'V1', file:'bank_statement.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(1, 11, 10), active: true },
+    { id:'d8', type:'signed_contract',  name:'Signed Contract',       version:'V1', file:'signed_contract.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(5, 17, 31), active: true }
   ];
 
   /* Display-only metadata for the "All documents" table — expiry, uploader and last-update
      per document type. Expiry is shown only for the two types Document Info tracks an
      expiry date for (National ID, Commercial Register), matching that feature exactly. */
+  /* Uploader and last-update are no longer stored here — they come from each type's
+     current version entry instead, since those differ by upload, not by type. */
   const DOCS_TABLE_META = {
-    nid:             { expiry: 'Jan 2028', uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 3:25 PM' },
-    cr:              { expiry: 'May 2027', uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 3:25 PM' },
-    tax:             { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 4:45 PM' },
-    utility:         { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 5:15 PM' },
-    bank_statement:  { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Yesterday, 11:10 AM' },
-    signed_contract: { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Sep 20, 2025, 5:31 PM' }
+    nid:             { expiry: 'Jan 2028' },
+    cr:              { expiry: 'May 2027' },
+    tax:             { expiry: '—' },
+    utility:         { expiry: '—' },
+    bank_statement:  { expiry: '—' },
+    signed_contract: { expiry: '—' }
   };
 
   /* Prototype-only: lets this demo show what the tab looks like on an account
@@ -956,9 +998,24 @@
      always starts from the seeded uploads on load. */
   let simulateNoUploads = false;
 
-  const docsForType = id => simulateNoUploads ? [] : SEED_ACCOUNT_DOCS.filter(d => d.type === id);
+  /* The current files for a type — what the table row and the drawer's "Document
+     Details" show. */
+  const docsForType = id => simulateNoUploads ? [] : SEED_ACCOUNT_DOCS.filter(d => d.type === id && d.active);
   /* One card per uploaded document type, in the order the types are defined. */
   const recordableTypes = () => DOC_TYPES.filter(dt => docsForType(dt.id).length);
+
+  /* Every superseded version of a type, newest first, one entry per version number
+     with the file(s) filed under it — what "Previous Versions" in the drawer lists. */
+  function versionsForType(id) {
+    if (simulateNoUploads) return [];
+    const byVersion = {};
+    SEED_ACCOUNT_DOCS.filter(d => d.type === id && !d.active).forEach(d => {
+      const v = byVersion[d.version] || (byVersion[d.version] =
+        { version: d.version, files: [], uploadedBy: d.uploadedBy, uploadedAt: d.uploadedAt });
+      v.files.push(d);
+    });
+    return Object.values(byVersion).sort((a, b) => b.uploadedAt - a.uploadedAt);
+  }
 
   /* Field keys repeat across types — full_name, date_of_birth, gender, nationality and
      issue_date all appear on more than one document. Namespace each field by its type so
@@ -992,31 +1049,24 @@
   /* The uploads the account arrived with predate anything captured here, so on a
      store with no history at all we lay them down as events. Times line up with the
      "last update" column, and the uploader is the agent who filed them. */
-  const SEEDED_UPLOADER = 'mhegab@elements-ft.com';
-  const SEED_EVENTS = [
-    { doc: 'utility',         h: 17, m: 15, day: 0, file: 'utility_bill.pdf' },
-    { doc: 'tax',             h: 16, m: 45, day: 0, file: 'tax_id_card.pdf' },
-    { doc: 'cr',              h: 15, m: 25, day: 0, file: 'commercial_registration.pdf' },
-    { doc: 'nid',             h: 15, m: 25, day: 0, file: 'national_id_front.pdf, national_id_back.pdf' },
-    { doc: 'bank_statement',  h: 11, m: 10, day: 1, file: 'bank_statement.pdf' },
-    { doc: 'signed_contract', h: 17, m: 31, day: 5, file: 'signed_contract.pdf' }
-  ];
+  /* Every filed version becomes an "uploaded" event, built straight from
+     SEED_ACCOUNT_DOCS so the feed can never drift from what the tab shows. */
   function seedEvents() {
     if (events.length) return;
-    const now = Date.now();
-    events = SEED_EVENTS.map(sv => {
-      const d = new Date();
-      d.setDate(d.getDate() - sv.day);
-      d.setHours(sv.h, sv.m, 0, 0);
-      /* These are meant to be history. A time later in the day than right now would
-         land in the future and sort above live activity, so step it back a day. */
-      if (d.getTime() > now) d.setDate(d.getDate() - 1);
-      const dt = DOC_TYPES.find(x => x.id === sv.doc);
-      const n = sv.file.split(', ').length;
+    const byVersion = {};
+    SEED_ACCOUNT_DOCS.forEach(d => {
+      const key = d.type + '|' + d.version;
+      const v = byVersion[key] || (byVersion[key] =
+        { doc: d.type, version: d.version, files: [], uploadedBy: d.uploadedBy, uploadedAt: d.uploadedAt });
+      v.files.push(d.file);
+    });
+    events = Object.values(byVersion).map(v => {
+      const dt = DOC_TYPES.find(x => x.id === v.doc);
+      const names = v.files.join(', ');
       return {
-        type: 'uploaded', doc: sv.doc, at: d.getTime(), by: SEEDED_UPLOADER,
-        text: 'uploaded <b>' + n + ' file' + (n > 1 ? 's' : '') + '</b> (' + esc(sv.file) +
-              ') as <b>V1</b> of <b>' + esc(dt ? dt.name : sv.doc) + '</b>',
+        type: 'uploaded', doc: v.doc, at: v.uploadedAt, by: v.uploadedBy,
+        text: 'uploaded <b>' + v.files.length + ' file' + (v.files.length > 1 ? 's' : '') + '</b> (' + esc(names) +
+              ') as <b>' + esc(v.version) + '</b> of <b>' + esc(dt ? dt.name : v.doc) + '</b>',
         changes: []
       };
     }).sort((a, b) => b.at - a.at);
@@ -1167,6 +1217,19 @@
     let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
     return p(d.getDate()) + ' ' + d.toLocaleString('en-US',{month:'short'}) + ' ' + d.getFullYear() + ', ' + p(h) + ':' + p(d.getMinutes()) + ' ' + ap;
   }
+  /* "Today, 3:25 PM" / "Yesterday, 11:10 AM" / "20 Sep 2025, 5:31 PM" — the relative
+     style already used for document upload dates, now computed instead of hardcoded. */
+  function fmtRelative(ms) {
+    const d = new Date(ms), now = new Date();
+    const startOf = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const days = Math.round((startOf(now) - startOf(d)) / 86400000);
+    const p = n => String(n).padStart(2,'0');
+    let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    const time = h + ':' + p(d.getMinutes()) + ' ' + ap;
+    if (days === 0) return 'Today, ' + time;
+    if (days === 1) return 'Yesterday, ' + time;
+    return p(d.getDate()) + ' ' + d.toLocaleString('en-US',{month:'short'}) + ' ' + d.getFullYear() + ', ' + time;
+  }
 
   /* ═══════════════════════════════════════════════════════════════
      4. Toast
@@ -1229,12 +1292,12 @@
   /* ── Drawer · Details tab: preview, document details, and the info-fields form ── */
   /* ── Drawer · Details tab: read-only preview + document details, listed one per row ── */
   function drawerDetailsHTML(dt, files) {
-    const meta = DOCS_TABLE_META[dt.id] || {};
+    const primary = files[0];
     const pairs = [
       ['Document Type', dt.name],
       ['File Name', files.map(f => f.file).filter(Boolean).join(', ') || '—'],
-      ['Uploaded By', meta.uploadedBy || '—'],
-      ['Upload Date', meta.lastUpdate || '—']
+      ['Uploaded By', primary ? primary.uploadedBy : '—'],
+      ['Upload Date', primary ? fmtRelative(primary.uploadedAt) : '—']
     ];
 
     return (
@@ -1246,8 +1309,29 @@
         '<div class="detail-grid">' + pairs.map(([l, v]) =>
           '<div class="dg-pair"><span class="dg-label">' + esc(l) + '</span><span class="dg-value">' + esc(v) + '</span></div>'
         ).join('') + '</div>' +
+      '</div>' +
+      '<div class="drawer-section" style="margin-bottom:0;">' +
+        '<div class="drawer-section-title">Previous Versions</div>' +
+        versionListHTML(dt) +
       '</div>'
     );
+  }
+
+  /* ── Drawer · Details tab: the Previous Versions list ── */
+  function versionListHTML(dt) {
+    const versions = versionsForType(dt.id);
+    if (!versions.length) return '<div class="version-empty">No previous versions for this document.</div>';
+    return '<div class="version-list">' + versions.map(v =>
+      '<div class="version-item">' +
+        '<div class="version-item-top"><span class="ver-pill">' + esc(v.version) + '</span></div>' +
+        '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+        '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>' +
+        '<div class="version-actions">' +
+          '<button type="button" data-version-action="preview" data-version="' + esc(v.version) + '" data-doctype="' + esc(dt.id) + '">' + EYE_ICON + 'Preview</button>' +
+          '<button type="button" data-version-action="download" data-version="' + esc(v.version) + '" data-doctype="' + esc(dt.id) + '">' + DOWNLOAD_ICON + 'Download</button>' +
+        '</div>' +
+      '</div>'
+    ).join('') + '</div>';
   }
 
   /* ── Drawer · Document info fields tab: the editable form ── */
@@ -1542,6 +1626,8 @@
       const files = docsForType(dt.id);
       const meta = DOCS_TABLE_META[dt.id] || {};
       const version = files[0] ? files[0].version : '';
+      const uploadedBy = files[0] ? files[0].uploadedBy : '—';
+      const lastUpdate = files[0] ? fmtRelative(files[0].uploadedAt) : '—';
       return '<tr data-open-drawer="' + dt.id + '">' +
         '<td class="dt-check"><input type="checkbox" data-row-check="' + dt.id + '"></td>' +
         '<td><div class="doc-name-cell">' +
@@ -1550,9 +1636,9 @@
           '<div class="dn-files">' + files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
         '</div></td>' +
         '<td>' + esc(meta.expiry || '—') + '</td>' +
-        '<td>' + esc(meta.uploadedBy || '—') + '</td>' +
+        '<td>' + esc(uploadedBy) + '</td>' +
         '<td><span class="status-badge ok"><span class="dot"></span>Approved</span></td>' +
-        '<td>' + esc(meta.lastUpdate || '—') + '</td>' +
+        '<td>' + esc(lastUpdate) + '</td>' +
         '<td class="dt-menu">' + rowMenuHTML(dt.id) + '</td>' +
       '</tr>';
     });
@@ -1844,21 +1930,19 @@
        "no documents uploaded" simulation. */
     simulateNoUploads = false;
 
-    /* A new upload supersedes what was there: the type's earlier files are replaced by
-       these, one version up, so a row always shows a single coherent version. */
-    const existing = SEED_ACCOUNT_DOCS.filter(d => d.type === dt.id);
-    const nextVer = 'V' + (existing.reduce((n, d) => Math.max(n, parseInt(String(d.version).slice(1), 10) || 1), 0) + 1);
-    existing.forEach(d => SEED_ACCOUNT_DOCS.splice(SEED_ACCOUNT_DOCS.indexOf(d), 1));
+    /* A new upload supersedes what was there: the type's current files are marked
+       inactive rather than removed, so the old version stays reachable afterwards. */
+    const allVersions = SEED_ACCOUNT_DOCS.filter(d => d.type === dt.id);
+    const nextVer = 'V' + (allVersions.reduce((n, d) => Math.max(n, parseInt(String(d.version).slice(1), 10) || 1), 0) + 1);
+    allVersions.filter(d => d.active).forEach(d => { d.active = false; });
+    const uploadedAt = Date.now();
     uploadFiles.forEach(f => SEED_ACCOUNT_DOCS.push({
       id: 'd' + (++uploadSeq), type: dt.id, version: nextVer, file: f.name,
       /* Labelled slots keep their name, matching how the seeded uploads read. */
       name: f.label ? dt.name + ' (' + f.label + ')' : dt.name,
-      label: f.label || null
+      label: f.label || null,
+      uploadedBy: CURRENT_USER, uploadedAt, active: true
     }));
-
-    const meta = DOCS_TABLE_META[dt.id] || (DOCS_TABLE_META[dt.id] = { expiry: '—' });
-    meta.uploadedBy = CURRENT_USER;
-    meta.lastUpdate = 'Just now';
 
     const names = uploadFiles.map(f => f.name);
     addEvent('uploaded', dt.id,
@@ -1943,6 +2027,20 @@
       const state = inEvents ? eventsPage : docsPage;
       state.page = Number(pageBtn.getAttribute('data-page'));
       if (inEvents) renderEvents(); else renderAllDocs();
+      return;
+    }
+
+    const verAction = e.target.closest('[data-version-action]');
+    if (verAction) {
+      const action = verAction.getAttribute('data-version-action');
+      const version = verAction.getAttribute('data-version');
+      const dt = DOC_TYPES.find(d => d.id === verAction.getAttribute('data-doctype'));
+      if (dt) {
+        addEvent(action === 'preview' ? 'previewed' : 'downloaded', dt.id,
+          (action === 'preview' ? 'previewed <b>' : 'downloaded <b>') + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        renderEvents();
+      }
+      toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + ' ' + version + '.');
       return;
     }
 
