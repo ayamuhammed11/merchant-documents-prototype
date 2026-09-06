@@ -25,10 +25,12 @@ Document Types: https://ayamuhammed11.github.io/merchant-documents-prototype/doc
   - *Document info fields* — the editable form, validated live against that
     type's definition.
   - *Audit Logs* — this document's own history.
-- **Row menu (⋮)** — *Preview* opens the same document details drawer a
-  row-click does. *Download* is a single action normally, or a small picker
-  — current version plus each previous one, dated — when a type has more
-  than one version on file.
+- **Row menu (⋮)** — always just *Preview* (opens the same document details
+  drawer a row-click does) and *Download*. Download acts immediately when a
+  type has only one version on file; when it has more than one, it opens a
+  centered pop-up instead — a dropdown to pick the version, its file(s) and
+  uploader/date shown below, and a Download that acts on whichever is
+  selected.
 - **Upload document drawer** — pick a document type, and the drawer reshapes
   itself to that type's **file upload rule** as authored in Document Types:
   - *Single file* — one dropzone; a second file replaces the first.
@@ -41,12 +43,6 @@ Document Types: https://ayamuhammed11.github.io/merchant-documents-prototype/doc
   definition and are enforced, saying what was refused and why. Re-uploading a
   type supersedes its current version rather than replacing it outright — the
   old one moves into Previous Versions.
-- **Events** — everything done on the tab and inside its documents: uploads,
-  downloads, and the info fields captured or changed on each document (opening
-  a preview isn't logged, since nothing changes or moves). Each entry is
-  chipped with the document it belongs to, or *This tab* for account-level
-  actions. Paginated, newest first.
-
 ## Notes
 
 It is a single self-contained HTML file — no build step, no dependencies beyond

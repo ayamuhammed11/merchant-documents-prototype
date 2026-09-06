@@ -245,16 +245,6 @@
     color: var(--foreground); cursor: pointer; }
   .row-menu-pop button:hover { background: var(--muted); }
   .row-menu-pop svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
-  /* Download, when a type has more than one version — pick which one, not just
-     the current one. */
-  .row-menu-pop.has-versions { min-width: 208px; }
-  .row-menu-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
-    color: var(--cadet-05); padding: 8px 10px 4px; }
-  .row-menu-sep { height: 1px; background: var(--border-subtle); margin: 4px 2px; }
-  .row-menu-pop .rmv-body { display: flex; flex-direction: column; min-width: 0; }
-  .row-menu-pop .rmv-top { display: flex; align-items: center; gap: 6px; }
-  .row-menu-pop .rmv-current { font-size: 11px; font-weight: 700; color: var(--primary); }
-  .row-menu-pop .rmv-date { font-size: 11px; color: var(--cadet-05); margin-top: 1px; }
 
   .docs-empty { text-align: center; font-size: 13px; color: var(--cadet-05); padding: 30px 16px; }
 
@@ -370,6 +360,26 @@
   .version-picker-foot { display: flex; justify-content: flex-end; margin-top: 12px; }
   .version-empty { font-size: 12.5px; color: var(--cadet-05); margin-top: 14px; }
 
+  /* Download-version picker — a centered pop-up, reached from the row's three-dot
+     menu, for choosing which version of a document to download. An ID selector,
+     not a class: this backdrop also matches the plain .drawer-backdrop rule two
+     blocks down (justify-content: flex-end; z-index: 90), and with equal
+     specificity the LAST-declared rule in the stylesheet wins regardless of
+     which reads more specific to a person — an ID always wins on specificity
+     alone, independent of source order. */
+  #dlPickerBackdrop { justify-content: center; align-items: center; padding: 24px; z-index: 95; }
+  .dl-picker-modal { background: #fff; border-radius: 12px; width: 380px; max-width: 100%;
+    box-shadow: 0 20px 60px rgba(16,24,40,.25); display: flex; flex-direction: column;
+    overflow: hidden; animation: drawerIn .18s ease; }
+  .dl-picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); }
+  .dl-picker-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700;
+    color: var(--foreground); line-height: 1.3; overflow-wrap: anywhere; }
+  .dl-picker-body { padding: 22px; }
+  .dl-picker-body > label { display: block; font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 7px; }
+  .dl-picker-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px;
+    background: #FCFCFD; border-top: 1px solid var(--border-subtle); }
+
   .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
 
@@ -401,20 +411,6 @@
   .events-empty.show { display: block; }
   .ev-icon.uploaded   { background: var(--success-bg); color: var(--success-text); } /* a file was successfully filed */
   .ev-icon.downloaded { background: var(--accent-10); color: var(--accent); }           /* Kashier teal — retrieving a copy */
-  /* Which document an event belongs to — only shown on the tab-level feed,
-     where events from every document are mixed together. */
-  .ev-scope { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
-    letter-spacing: .04em; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; margin-left: 8px;
-    background: var(--pill-bg); color: var(--pill-text); vertical-align: middle; }
-  .ev-scope.general { background: var(--ocean-10); color: var(--primary); }
-
-  /* Events card — the whole tab's activity, not one document's */
-  .events-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-top: 20px; }
-  .events-card-head { padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
-  .events-card-head h2 { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
-  .events-card-sub { font-size: 12.5px; color: var(--cadet-05); margin-top: 4px; }
-  .events-list { padding: 4px 22px; }
-
   /* Pagination — mirrors the On-Hold tables so both modules page the same way */
   .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
     flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--border-subtle); }
@@ -614,34 +610,6 @@
         </div>
       </div>
 
-      <!-- ═════ Events — every action taken on this tab or inside a document ═════ -->
-      <div class="events-card">
-        <div class="events-card-head">
-          <h2>Events</h2>
-          <p class="events-card-sub">Everything done on this tab and inside the documents on it — uploads,
-            downloads, previews, and the info fields captured or changed on each document.</p>
-        </div>
-        <div class="events-list">
-          <div id="eventsFeed"></div>
-          <div class="events-empty" id="eventsEmpty">No activity recorded on this tab yet.</div>
-        </div>
-        <div class="pagination-bar" id="eventsPaginationBar">
-          <div class="pagination-info" id="eventsPageInfo">0 - 0 of 0</div>
-          <div class="pagination-right">
-            <div class="pagination" id="eventsPagination"></div>
-            <div class="rpp">
-              Per page:
-              <select id="eventsRpp">
-                <option selected>5</option>
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 
@@ -680,6 +648,27 @@
           <button class="btn btn-ghost btn-sm" id="uploadCancelBtn" type="button">Cancel</button>
           <button class="btn btn-primary btn-sm" id="uploadSubmitBtn" type="button" disabled>Upload</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ Download-version picker (pop-up) ══════════════════ -->
+  <div class="drawer-backdrop" id="dlPickerBackdrop">
+    <div class="dl-picker-modal" role="dialog" aria-modal="true" aria-labelledby="dlPickerTitle">
+      <div class="dl-picker-head">
+        <h2 id="dlPickerTitle">Download document</h2>
+        <button class="drawer-close" id="dlPickerClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="dl-picker-body">
+        <label for="dlPickerSelect">Version</label>
+        <select class="inp" id="dlPickerSelect"></select>
+        <div id="dlPickerInfo"></div>
+      </div>
+      <div class="dl-picker-foot">
+        <button class="btn btn-ghost btn-sm" id="dlPickerCancel" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="dlPickerDownload" type="button">Download</button>
       </div>
     </div>
   </div>
@@ -1342,6 +1331,48 @@
       '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>';
   }
 
+  /* ── Download-version picker (pop-up) ──
+     Reached from a row's three-dot menu. Every version of a type, current
+     included — unlike the drawer's Previous Versions dropdown, which only
+     lists what's been superseded, since the current version is already the
+     one shown there. */
+  let dlPickerDocId = null;
+
+  function dlPickerVersions(dt) {
+    const current = docsForType(dt.id);
+    const primary = current[0];
+    const versions = primary
+      ? [{ version: primary.version, files: current, uploadedBy: primary.uploadedBy, uploadedAt: primary.uploadedAt, isCurrent: true }]
+      : [];
+    return versions.concat(versionsForType(dt.id).map(v => Object.assign({ isCurrent: false }, v)));
+  }
+
+  function openDownloadPicker(dt) {
+    const versions = dlPickerVersions(dt);
+    if (!versions.length) return;
+    dlPickerDocId = dt.id;
+    $('dlPickerTitle').textContent = 'Download ' + dt.name;
+    $('dlPickerSelect').innerHTML = versions.map(v =>
+      '<option value="' + esc(v.version) + '">' + esc(v.version) + (v.isCurrent ? ' (Current)' : '') +
+      ' \u2014 ' + esc(fmtRelative(v.uploadedAt)) + '</option>').join('');
+    renderDownloadPickerInfo();
+    $('dlPickerBackdrop').classList.add('open');
+  }
+
+  function closeDownloadPicker() {
+    $('dlPickerBackdrop').classList.remove('open');
+    dlPickerDocId = null;
+  }
+
+  function renderDownloadPickerInfo() {
+    const dt = DOC_TYPES.find(d => d.id === dlPickerDocId);
+    const v = dt && dlPickerVersions(dt).find(x => x.version === $('dlPickerSelect').value);
+    if (!v) return;
+    $('dlPickerInfo').innerHTML =
+      '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+      '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>';
+  }
+
   /* ── Drawer · Document info fields tab: the editable form ── */
   function drawerFieldsHTML(dt) {
     const filled = dt.fields.filter(f => valueOf(f)).length;
@@ -1360,25 +1391,16 @@
   }
 
   /* ── Drawer · Audit Logs tab: this document type's events only ── */
-  /* `withScope` adds the chip naming which document the event belongs to — wanted on
-     the tab-level feed, where every document's events are mixed, and pointless inside
-     a drawer that is already scoped to one document. */
-  function eventItemHTML(e, withScope) {
+  function eventItemHTML(e) {
     const detail = e.changes && e.changes.length
       ? '<ul class="ev-changes">' + e.changes.map(c =>
           '<li><span class="fld">' + esc(c.label) + '</span> — ' +
           valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
       : '';
-    let scope = '';
-    if (withScope) {
-      const dt = e.doc && DOC_TYPES.find(d => d.id === e.doc);
-      scope = dt ? '<span class="ev-scope">' + esc(dt.name) + '</span>'
-                 : '<span class="ev-scope general">This tab</span>';
-    }
     return '<div class="event-item">' +
       '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
       '<div class="ev-body">' +
-        '<div class="ev-ts">' + fmtStamp(e.at) + scope + '</div>' +
+        '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
         '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
         detail +
       '</div>' +
@@ -1387,9 +1409,7 @@
   function drawerAuditHTML(dt) {
     const mine = events.filter(e => e.doc === dt.id);
     if (!mine.length) return '<div class="events-empty show">No changes recorded yet for this document.</div>';
-    /* Wrapped, not passed by reference: map would hand the index in as `withScope`
-       and stamp a document chip on every entry after the first. */
-    return mine.map(e => eventItemHTML(e)).join('');
+    return mine.map(eventItemHTML).join('');
   }
 
   function renderDrawer() {
@@ -1497,9 +1517,6 @@
 
   function addEvent(type, docId, text, changes) {
     events.unshift({ type, doc: docId, at: Date.now(), by: CURRENT_USER, text, changes: changes || [] });
-    /* The feed is newest-first, so a new entry belongs on page 1 — otherwise
-       recording an action appears to do nothing. */
-    eventsPage.page = 1;
     persist();
   }
 
@@ -1583,7 +1600,6 @@
     attemptedSave = false;
     renderDrawer();          /* stays open, refreshed with the saved values and audit entry */
     renderAllDocs();
-    renderEvents();
     toast(dt.name + ' info saved.');
   }
 
@@ -1619,32 +1635,13 @@
 
   function rowMenuHTML(dt) {
     const rowId = dt.id;
-    const current = docsForType(rowId)[0];
-    const previous = versionsForType(rowId);
-
-    /* One version on file: Download stays a single action. More than one: it
-       becomes a picker, current first, so the agent chooses which to download
-       instead of always getting the latest. */
-    const downloadSection = !previous.length
-      ? '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>'
-      : '<div class="row-menu-label">Download version</div>' +
-        [{ version: current.version, uploadedAt: current.uploadedAt, isCurrent: true }]
-          .concat(previous.map(v => ({ version: v.version, uploadedAt: v.uploadedAt, isCurrent: false })))
-          .map(v => '<button type="button" data-version-download data-version="' + esc(v.version) + '" data-doctype="' + esc(rowId) + '">' +
-            DOWNLOAD_ICON +
-            '<span class="rmv-body">' +
-              '<span class="rmv-top"><span class="ver-pill">' + esc(v.version) + '</span>' +
-                (v.isCurrent ? '<span class="rmv-current">Current</span>' : '') + '</span>' +
-              '<span class="rmv-date">' + esc(fmtRelative(v.uploadedAt)) + '</span>' +
-            '</span>' +
-          '</button>').join('');
-
+    /* Always the same two options — Download opens the version picker itself
+       when there's more than one to choose from, so the menu stays simple. */
     return '<div class="row-menu" data-row-menu="' + rowId + '">' +
       '<button class="row-menu-btn" type="button" data-menu-toggle="' + rowId + '" aria-label="Row actions">' + KEBAB + '</button>' +
-      '<div class="row-menu-pop' + (previous.length ? ' has-versions' : '') + '" id="menu_' + rowId + '">' +
+      '<div class="row-menu-pop" id="menu_' + rowId + '">' +
         '<button type="button" data-menu-action="preview" data-menu-row="' + rowId + '">' + EYE_ICON + 'Preview</button>' +
-        (previous.length ? '<div class="row-menu-sep"></div>' : '') +
-        downloadSection +
+        '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>' +
       '</div>' +
     '</div>';
   }
@@ -1685,13 +1682,12 @@
   }
 
   /* ══════════════════════════════════════════════════════════════
-     8a. Pagination — one helper for the listing and the events feed
+     8a. Pagination — one helper, used by the All documents listing
      ══════════════════════════════════════════════════════════════ */
   const CHEV_L = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
   const CHEV_R = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
 
-  const docsPage   = { page: 1, perPage: 10 };
-  const eventsPage = { page: 1, perPage: 5 };
+  const docsPage = { page: 1, perPage: 10 };
 
   /* Clamps the page, then returns the slice to draw plus the range for the info line. */
   function paginate(items, state) {
@@ -1718,18 +1714,6 @@
     $(listId).innerHTML = html;
     /* One row of results needs no controls, but the count line still earns its place. */
     $(barId).style.display = total ? '' : 'none';
-  }
-
-  /* ══════════════════════════════════════════════════════════════
-     8c. Render — Events: this tab's activity and every document's, together
-     ══════════════════════════════════════════════════════════════ */
-  function renderEvents() {
-    const all = events.slice().sort((a, b) => b.at - a.at);
-    const { rows, totalPages, info } = paginate(all, eventsPage);
-    $('eventsFeed').innerHTML = rows.map(e => eventItemHTML(e, true)).join('');
-    $('eventsEmpty').classList.toggle('show', !all.length);
-    renderPagination('eventsPaginationBar', 'eventsPagination', 'eventsPageInfo',
-      eventsPage, all.length, totalPages, info);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -1989,7 +1973,6 @@
      ═══════════════════════════════════════════════════════════════ */
   function renderAll() {
     renderAllDocs();
-    renderEvents();
     renderSimToggle();
     if (openId) renderDrawer();
   }
@@ -2025,12 +2008,17 @@
         if (dt) openDrawer(dt.id);
         return;
       }
-      /* Only Download is logged — opening a preview doesn't change or move anything. */
+      /* Download picks a version first when there's more than one on file;
+         only Download is logged either way — opening a preview doesn't change
+         or move anything. */
       if (dt) {
-        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(dt.name) + '</b>', []);
-        renderEvents();
+        if (versionsForType(dt.id).length) {
+          openDownloadPicker(dt);
+        } else {
+          addEvent('downloaded', dt.id, 'downloaded <b>' + esc(dt.name) + '</b>', []);
+          toast('Downloads ' + dt.name + '.');
+        }
       }
-      toast('Downloads ' + (dt ? dt.name : 'this document') + '.');
       return;
     }
     if (!e.target.closest('.row-menu')) closeRowMenus();
@@ -2044,7 +2032,6 @@
       const n = recordableTypes().length;
       addEvent('downloaded', null, 'downloaded <b>all documents</b> on this account (' + n +
         ' document' + (n === 1 ? '' : 's') + ')', []);
-      renderEvents();
       toast('Downloading all documents on this account.');
       return;
     }
@@ -2054,28 +2041,25 @@
     if (e.target.closest('#uploadClose') || e.target.closest('#uploadCancelBtn')) { closeUploadDrawer(); return; }
     if (e.target === $('uploadBackdrop')) { closeUploadDrawer(); return; }
     if (e.target.closest('#uploadSubmitBtn')) { submitUpload(); return; }
-    /* Page buttons for both the listing and the events feed. */
+    if (e.target.closest('#dlPickerClose') || e.target.closest('#dlPickerCancel')) { closeDownloadPicker(); return; }
+    if (e.target === $('dlPickerBackdrop')) { closeDownloadPicker(); return; }
+    if (e.target.closest('#dlPickerDownload')) {
+      const dt = DOC_TYPES.find(d => d.id === dlPickerDocId);
+      const version = $('dlPickerSelect').value;
+      if (dt && version) {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        toast('Downloads ' + dt.name + ' ' + version + '.');
+      }
+      closeDownloadPicker();
+      return;
+    }
     const pageBtn = e.target.closest('.page-btn[data-page]');
     if (pageBtn && !pageBtn.disabled) {
-      const inEvents = !!pageBtn.closest('#eventsPagination');
-      const state = inEvents ? eventsPage : docsPage;
-      state.page = Number(pageBtn.getAttribute('data-page'));
-      if (inEvents) renderEvents(); else renderAllDocs();
+      docsPage.page = Number(pageBtn.getAttribute('data-page'));
+      renderAllDocs();
       return;
     }
 
-    const verDownload = e.target.closest('[data-version-download]');
-    if (verDownload) {
-      closeRowMenus();
-      const version = verDownload.getAttribute('data-version');
-      const dt = DOC_TYPES.find(d => d.id === verDownload.getAttribute('data-doctype'));
-      if (dt) {
-        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
-        renderEvents();
-      }
-      toast('Downloads ' + (dt ? dt.name : 'this document') + ' ' + version + '.');
-      return;
-    }
     /* Previous Versions dropdown, inside the drawer — downloads whichever
        version is currently selected. */
     if (e.target.closest('#verDownloadBtn')) {
@@ -2084,7 +2068,6 @@
       const version = $('verSelect') && $('verSelect').value;
       if (dt && version) {
         addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
-        renderEvents();
         toast('Downloads ' + dt.name + ' ' + version + '.');
       }
       return;
@@ -2113,9 +2096,9 @@
     if (e.target.classList && e.target.classList.contains('up-input')) {
       addUploadFiles(e.target.files, e.target.getAttribute('data-slot'));
     }
-    if (e.target.id === 'docsRpp')   { docsPage.perPage   = Number(e.target.value); docsPage.page = 1;   renderAllDocs(); }
-    if (e.target.id === 'eventsRpp') { eventsPage.perPage = Number(e.target.value); eventsPage.page = 1; renderEvents(); }
+    if (e.target.id === 'docsRpp') { docsPage.perPage = Number(e.target.value); docsPage.page = 1; renderAllDocs(); }
     if (e.target.id === 'verSelect') renderVersionPickerBody();
+    if (e.target.id === 'dlPickerSelect') renderDownloadPickerInfo();
   });
 
   /* Drag & drop, same as picking through the file dialog. Delegated, because the
@@ -2146,6 +2129,7 @@
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    if ($('dlPickerBackdrop').classList.contains('open')) { closeDownloadPicker(); return; }
     if ($('uploadBackdrop').classList.contains('open')) { closeUploadDrawer(); return; }
     if (openId) closeDrawer();
   });
