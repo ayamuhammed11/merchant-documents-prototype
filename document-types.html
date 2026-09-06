@@ -911,7 +911,14 @@
     try {
       const registry = documentTypes.map(d => ({
         id: d.id, name: d.name, nameAr: d.nameAr, kind: d.kind, desc: d.desc,
-        infoFields: d.infoFields || []
+        infoFields: d.infoFields || [],
+        /* The file upload rule (single / labeled / unlabeled), its formats and its
+           size cap — without these, anything reading this registry (the Documents
+           tab's Upload drawer) falls back to its own hardcoded single-file/5MB
+           default for every type, silently ignoring whatever is set here. */
+        files: d.files || { mode: 'single', labels: [] },
+        formats: d.formats || [],
+        maxSize: d.maxSize
       }));
       localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
     } catch (e) { /* localStorage unavailable — registry simply won't sync */ }
