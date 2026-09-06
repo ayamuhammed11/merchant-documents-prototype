@@ -1,8 +1,10 @@
 # Merchant Documents — prototype
 
-The **Documents** tab of a merchant account in the Kashier back office.
+The **Documents** tab of a merchant account in the Kashier back office, plus the
+**Document Types** module that defines what it uploads against.
 
 Open it: https://ayamuhammed11.github.io/merchant-documents-prototype/
+Document Types: https://ayamuhammed11.github.io/merchant-documents-prototype/document-types.html
 
 ## What it shows
 
@@ -54,8 +56,13 @@ Values captured in the info fields persist to `localStorage`, so a reload keeps
 them, as does the event and version history. The *Simulate: no documents
 uploaded* control flips the tab to an account with nothing uploaded, and back.
 
-Document types, their info fields and their file rules are read from the
-Document Types module when it has been used in the same browser; otherwise the
-page falls back to the same definitions that module ships with.
+Document types, their info fields and their file rules are read live from
+`document-types.html` — both pages share the same origin, so editing a type
+there (renaming a field, changing its file upload rule, adding a new type)
+and reopening the Upload document drawer on the Documents tab reflects it
+immediately, with no separate sync step. That state also lives in
+`localStorage`, so clearing the site's storage is what puts either page
+back to its shipped defaults.
 
-Sidebar navigation is decorative — this prototype is the Documents tab only.
+Sidebar navigation is decorative on both pages; only the *Documents* tab and
+the *Document Types* link between them are wired up.
